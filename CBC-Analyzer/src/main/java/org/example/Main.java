@@ -1,10 +1,7 @@
 package org.example;
 
 
-import javax.swing.text.html.HTMLDocument;
 import java.util.*;
-
-import static java.util.Map.entry;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,9 +9,11 @@ public class Main {
         BloodParameter wbc = new BloodParameter("White Blood Cells", 5, 14.1, "x10^3 / mcL");
         BloodParameter rbc = new BloodParameter("Red Blood Cells", 4.95, 7.87, "x10^12/L");
         BloodParameter hemaglobin = new BloodParameter("Hemaglobin", 11.0, 18.9, "g/dl");
-        BloodParameter hematacrit = new BloodParameter("Hematacrit", 35, 57, "%" );
+        BloodParameter hematocrit = new BloodParameter("Hematocrit", 35, 57, "%" );
         BloodParameter mcv = new BloodParameter( "Mean Corpuscular Volume", 66, 77, "fL");
         BloodParameter platelets = new BloodParameter( "Platelets", 211, 621, "x10^3/mcL");
+
+        //Create a Map of the BloodParameter objects so that we can get the right 
          /*
          Fill in the rest of the parameters into BloodParameter instances like above. They are:
          - Red blood cells (rbc):              4.95 - 7.87        x10^12 / L
@@ -27,15 +26,24 @@ public class Main {
         String wbcOutput;
         String rbcOutput;
         String hemaglobinOutput;
-        String hematacritOutput;
+        String hematocritOutput;
         String mcvOutput;
         String plateletsOutput;
 
         //Create random generator for blood map. (Don't do here, do outside main method.
         Map<String, Double> randomBloodMap = randomBloodParameters();
-        //Loop through Map and apply conditional logic to fill output variables.
+
+        /*
+        Loop through Map and apply conditional logic to fill output variables.
+
+        Problems to solve:
+         - get correct BloodParameter object based on bloodValue pulled from random Map
+         - use analyzeParameter() method in the associated BloodParameter object to get an output String
+         - apply output string to correct variable
+         */
+
         for (Map.Entry<String, Double> bloodValue : randomBloodMap.entrySet()) {
-            if
+
         }
         //output
 
