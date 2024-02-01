@@ -23,7 +23,6 @@ public class Main {
          - Mean corpuscular volume (mcv):      66 - 77            fL
          - Platelets:                          211 - 621          x10^3 / mcL
           */
-
         //Create output variables for each parameter. These don't need to be assigned, just declared.
         String wbcOutput;
         String rbcOutput;
@@ -32,22 +31,29 @@ public class Main {
         String mcvOutput;
         String plateletsOutput;
 
-
         //Create random generator for blood map. (Don't do here, do outside main method.
-        randomBloodParameters();
-
+        Map<String, Double> randomBloodMap = randomBloodParameters();
         //Loop through Map and apply conditional logic to fill output variables.
-
+        for (Map.Entry<String, Double> bloodValue : randomBloodMap.entrySet()) {
+            if
+        }
         //output
+
+
     }
 
     public static Map<String, Double> randomBloodParameters() {
         Random rand = new Random();
 
         //create blood map with parameters for the keys and random double for the values.
+        //Generating a random integer and dividing by 10.0/100.0/1.0 allows us to easily control the number of decimal places in line.
         Map<String, Double> bloodMap = new HashMap<>() {{
-            put("wbc", 0.0);
-            put("Hemoglobin", 0.0);
+            put("White Blood Cells", rand.nextInt(40, 150)/10.0);
+            put("Red Blood Cells", rand.nextInt(450, 825)/100.0);
+            put("Hemoglobin", rand.nextInt(119,189)/10.0);
+            put("Hematocrit", rand.nextInt(20, 75)/1.0);
+            put("Mean Crepuscular Volume", rand.nextInt(60, 85)/1.0);
+            put("Platelets", rand.nextInt(190, 750)/1.0);
         }};
 
         
