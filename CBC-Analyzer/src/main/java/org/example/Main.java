@@ -13,7 +13,7 @@ public class Main {
         BloodParameter mcv = new BloodParameter( "Mean Corpuscular Volume", 66, 77, "fL");
         BloodParameter platelets = new BloodParameter( "Platelets", 211, 621, "x10^3/mcL");
 
-        //Create a Map of the BloodParameter objects so that we can get the right 
+        //Create a Map of the BloodParameter objects so that we can get the right
          /*
          Fill in the rest of the parameters into BloodParameter instances like above. They are:
          - Red blood cells (rbc):              4.95 - 7.87        x10^12 / L
