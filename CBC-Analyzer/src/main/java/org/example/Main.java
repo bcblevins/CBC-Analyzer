@@ -5,32 +5,26 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        //BloodParameter is a class I made that holds 4 values: Name, Low end of reference range, high end of reference range, and unit.
-        BloodParameter wbc = new BloodParameter("White Blood Cells", 5, 14.1, "x10^3 / mcL");
-        BloodParameter rbc = new BloodParameter("Red Blood Cells", 4.95, 7.87, "x10^12/L");
-        BloodParameter hemaglobin = new BloodParameter("Hemaglobin", 11.0, 18.9, "g/dl");
-        BloodParameter hematocrit = new BloodParameter("Hematocrit", 35, 57, "%" );
-        BloodParameter mcv = new BloodParameter( "Mean Corpuscular Volume", 66, 77, "fL");
-        BloodParameter platelets = new BloodParameter( "Platelets", 211, 621, "x10^3/mcL");
+        //BloodParameter is a class that holds 4 values: Name, Low end of reference range, high end of reference range, and unit.
+        //These will be used to determine if each blood parameter is in or out of range.
+        BloodParameter wbc = new BloodParameter("White Blood Cells", 5, 14.1, " thousand/mcL");
+        BloodParameter rbc = new BloodParameter("Red Blood Cells", 4.95, 7.87, " million/L");
+        BloodParameter hemoglobin = new BloodParameter("Hemoglobin", 11.0, 18.9, " g/dl");
+        BloodParameter hematocrit = new BloodParameter("Hematocrit", 35, 57, " %" );
+        BloodParameter mcv = new BloodParameter( "Mean Crepuscular Volume", 66, 77, " fL");
+        BloodParameter platelets = new BloodParameter( "Platelets", 211, 621, " thousand/mcL");
 
-        //Create a Map of the BloodParameter objects so that we can get the right
-         /*
-         Fill in the rest of the parameters into BloodParameter instances like above. They are:
-         - Red blood cells (rbc):              4.95 - 7.87        x10^12 / L
-         - Hemoglobin:                         11.9 - 18.9        g/dL
-         - Hematocrit:                         35 - 57            %
-         - Mean corpuscular volume (mcv):      66 - 77            fL
-         - Platelets:                          211 - 621          x10^3 / mcL
-          */
-        //Create output variables for each parameter. These don't need to be assigned, just declared.
-        String wbcOutput;
-        String rbcOutput;
-        String hemaglobinOutput;
-        String hematocritOutput;
-        String mcvOutput;
-        String plateletsOutput;
+        //Create BloodParameter object map.
+        Map<String, BloodParameter> bloodParameterMap = new HashMap<>() {{
+            put(wbc.Name, wbc);
+            put(rbc.Name, rbc);
+            put(hemoglobin.Name, hemoglobin);
+            put(hematocrit.Name, hematocrit);
+            put(mcv.Name, mcv);
+            put(platelets.Name, platelets);
+        }};
 
-        //Create random generator for blood map. (Don't do here, do outside main method.
+        //Get randomBloodMap
         Map<String, Double> randomBloodMap = randomBloodParameters();
 
         /*
@@ -39,12 +33,14 @@ public class Main {
         Problems to solve:
          - get correct BloodParameter object based on bloodValue pulled from random Map
          - use analyzeParameter() method in the associated BloodParameter object to get an output String
+              this works by passing the value of the blood parameter and returning a string for output.
          - apply output string to correct variable
          */
-
         for (Map.Entry<String, Double> bloodValue : randomBloodMap.entrySet()) {
-
+            System.out.println(bloodParameterMap.get(bloodValue.getKey()).analyzeParameter(bloodValue.getValue()));
         }
+
+
         //output
 
 

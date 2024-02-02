@@ -8,6 +8,7 @@ public class BloodParameter {
     String Unit;
     String NormalRangeForOutput;
     static final String RED_ANSI_CODE = "\u001B[31m";
+    static final String GREEN_ANSI_CODE = "\u001B[32m";
     static final String ANSI_RESET_CODE = "\u001B[0m";
 
     public BloodParameter(String name, double rangeLow, double rangeHigh, String unit) {
@@ -15,7 +16,7 @@ public class BloodParameter {
         this.RangeLow = rangeLow;
         this.RangeHigh = rangeHigh;
         this.Unit = unit;
-        this.NormalRangeForOutput = "  |  Normal Range: " + rangeLow + " - " + rangeHigh + unit;
+        this.NormalRangeForOutput = "  |  " + GREEN_ANSI_CODE + rangeLow + " - " + rangeHigh + ANSI_RESET_CODE + unit;
     }
 
     public String analyzeParameter(double bloodValue) {
@@ -23,15 +24,15 @@ public class BloodParameter {
 
         //Create a result based on how bloodValue compares to normal range, then create an output string for return.
         if (bloodValue > this.RangeHigh){
-            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + "(+) = " + bloodValue + ANSI_RESET_CODE;
+            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + " = (+)" + bloodValue + this.Unit + ANSI_RESET_CODE;
             return bloodValueFormattedForOutput + this.NormalRangeForOutput;
 
         } else if (bloodValue < this.RangeLow) {
-            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + "(-) = " + bloodValue + ANSI_RESET_CODE;
+            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + " = (-)" + bloodValue + this.Unit + ANSI_RESET_CODE;
             return bloodValueFormattedForOutput + this.NormalRangeForOutput;
 
         } else {
-            bloodValueFormattedForOutput = this.Name + " = " + bloodValue;
+            bloodValueFormattedForOutput = this.Name + " = " + bloodValue + this.Unit;
             return bloodValueFormattedForOutput + this.NormalRangeForOutput;
 
         }
