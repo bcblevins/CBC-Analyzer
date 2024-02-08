@@ -1,41 +1,61 @@
 package org.example;
 import java.util.*;
 
+
+
 public class BloodParameter {
-    String Name;
-    double RangeLow;
-    double RangeHigh;
-    String Unit;
-    String NormalRangeForOutput;
-    static final String RED_ANSI_CODE = "\u001B[31m";
-    static final String GREEN_ANSI_CODE = "\u001B[32m";
-    static final String ANSI_RESET_CODE = "\u001B[0m";
+    private String Name;
+    private double RangeLow;
+    private double RangeHigh;
+    private String Unit;
+    private String analyzedBloodValue;
+    private String NormalRangeForOutput;
+    private boolean isOutsideNormalRange;
+
 
     public BloodParameter(String name, double rangeLow, double rangeHigh, String unit) {
         this.Name = name;
         this.RangeLow = rangeLow;
         this.RangeHigh = rangeHigh;
         this.Unit = unit;
-        this.NormalRangeForOutput = "  |  " + GREEN_ANSI_CODE + rangeLow + " - " + rangeHigh + ANSI_RESET_CODE + unit;
+        this.NormalRangeForOutput = rangeLow + " - " + rangeHigh;
     }
 
-    public String analyzeParameter(double bloodValue) {
+    //This method fills the analyzedBloodValue with a string depending on how it compares to the normal range
+    public void analyzeParameter(double bloodValue) {
         String bloodValueFormattedForOutput;
 
         //Create a result based on how bloodValue compares to normal range, then create an output string for return.
         if (bloodValue > this.RangeHigh){
-            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + " = (+)" + bloodValue + this.Unit + ANSI_RESET_CODE;
-            return bloodValueFormattedForOutput + this.NormalRangeForOutput;
+            this.analyzedBloodValue =  bloodValue + "(+)";
+            isOutsideNormalRange = true;
 
         } else if (bloodValue < this.RangeLow) {
-            bloodValueFormattedForOutput = RED_ANSI_CODE + this.Name + " = (-)" + bloodValue + this.Unit + ANSI_RESET_CODE;
-            return bloodValueFormattedForOutput + this.NormalRangeForOutput;
+            this.analyzedBloodValue = bloodValue + "(-)";
+            isOutsideNormalRange = true;
 
         } else {
-            bloodValueFormattedForOutput = this.Name + " = " + bloodValue + this.Unit;
-            return bloodValueFormattedForOutput + this.NormalRangeForOutput;
-
+            this.analyzedBloodValue = String.valueOf(bloodValue);
         }
     }
 
+    public String getAnalyzedBloodValue() {
+        return analyzedBloodValue;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getNormalRangeForOutput() {
+        return NormalRangeForOutput;
+    }
+
+    public boolean isOutsideNormalRange() {
+        return isOutsideNormalRange;
+    }
+
+    public String getUnit() {
+        return Unit;
+    }
 }
