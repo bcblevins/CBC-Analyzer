@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.*;
 
-import static org.example.Main.*;
+import static org.example.Main.*;    //need to come up with alternative. Not good style?
 
 
 public class IOSystem {

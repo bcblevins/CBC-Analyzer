@@ -5,11 +5,13 @@ import java.util.*;
 
 /*
     Master problem list:
-     - Random Blood Map:
+     + Random Blood Map:
        - Generating a random integer and dividing by 10.0/100.0/1.0 allows us to easily control the number of decimal places in line.
         This methodology comes with problems like:
           - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
           - There is probably an explicit way to limit decimal length while keeping the types as doubles.
+     + IOSystem:
+       - Used import to access Main variables (import static org.example.Main.*;), bad style?
 
        TODO: See README
  */
@@ -102,4 +104,6 @@ public class Main {
         
         return bloodMap;
     }
+
+
 }
