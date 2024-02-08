@@ -54,8 +54,8 @@ public class IOSystem {
         return bloodMap;
     }
     public void outputTable(List<BloodParameter> bloodParameterList) {
-        System.out.println("Parameter                 |Result    |Normal Range   | Unit          |");
-        System.out.println("--------------------------|----------|---------------|---------------|");
+        System.out.println("Parameter                 |Result    |Normal Range   | Unit     |");
+        System.out.println("--------------------------|----------|---------------|----------|");
 
         for (BloodParameter bloodParameter : bloodParameterList) {
             //create name cells for each bloodParameter
@@ -68,7 +68,7 @@ public class IOSystem {
             String normalRangeCell = createCell(bloodParameter.getNormalRangeForOutput(), 15);
 
             //create unit cells
-            String unitCell = createCell(bloodParameter.getUnit(), 15);
+            String unitCell = createCell(bloodParameter.getUnit(), 10);
 
             //create row
             String row = nameCell + resultCell + normalRangeCell + unitCell;

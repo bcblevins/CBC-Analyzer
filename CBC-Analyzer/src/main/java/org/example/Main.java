@@ -17,12 +17,12 @@ public class Main {
     public static IOSystem iOSys = new IOSystem();
     //BloodParameter is a class that is constructed with 4 values: Name, Low end of reference range, high end of reference range, and unit.
     //These will be used to determine if each blood value is in or out of range, and will store the result of the analysis.
-    public static BloodParameter wbc = new BloodParameter("White Blood Cells", 5, 14.1, " thousand/mcL");
-    public static BloodParameter rbc = new BloodParameter("Red Blood Cells", 4.95, 7.87, " million/L");
-    public static BloodParameter hemoglobin = new BloodParameter("Hemoglobin", 11.0, 18.9, " g/dl");
-    public static BloodParameter hematocrit = new BloodParameter("Hematocrit", 35, 57, " %" );
-    public static BloodParameter mcv = new BloodParameter( "Mean Crepuscular Volume", 66, 77, " fL");
-    public static BloodParameter platelets = new BloodParameter( "Platelets", 211, 621, " thousand/mcL");
+    public static BloodParameter wbc = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
+    public static BloodParameter rbc = new BloodParameter("Red Blood Cells", 4.8, 9.3, " 10^6/mcL");
+    public static BloodParameter hemoglobin = new BloodParameter("Hemoglobin", 12.1, 20.3, " g/dl");
+    public static BloodParameter hematocrit = new BloodParameter("Hematocrit", 36, 60, " %" );
+    public static BloodParameter mcv = new BloodParameter( "Mean Crepuscular Volume", 58, 79, " fL");
+    public static BloodParameter platelets = new BloodParameter( "Platelets", 170, 400, " 10^3/mcL");
 
     //BloodParameter objects are put into Map so that they can be matched up to the Map of blood values to be analyzed
     public static Map<String, BloodParameter> bloodParameterMap = new HashMap<>() {{
@@ -87,7 +87,6 @@ public class Main {
         This methodology comes with problems like:
           - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
           - There is probably an explicit way to limit decimal length while keeping the types as doubles
-
          */
         Map<String, Double> bloodMap = new HashMap<>() {{
             put(wbc.getName(), rand.nextInt(40, 150)/10.0);
