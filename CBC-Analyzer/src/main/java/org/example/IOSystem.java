@@ -11,6 +11,7 @@ public class IOSystem {
     private Scanner input = new Scanner(System.in);
 
     public String displayMenu(String... args) {
+        System.out.println(ANSI_RED_CODE + "This program currently only evaluates based on canine blood normal ranges" + ANSI_RESET_CODE);
         System.out.println("Would you like to:");
         int menuNumber = 1;
 

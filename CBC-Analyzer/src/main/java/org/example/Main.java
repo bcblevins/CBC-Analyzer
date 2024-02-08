@@ -11,7 +11,9 @@ import java.util.*;
           - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
           - There is probably an explicit way to limit decimal length while keeping the types as doubles.
 
+       TODO: See README
  */
+
 
 public class Main {
     public static IOSystem iOSys = new IOSystem();
