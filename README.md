@@ -16,3 +16,4 @@ Also included is a demo mode where blood values are randomly generated.
 - Ability to analyze a greater number of CBC parameters
 - Take name in input and log each analysis by name in text file.
 - Recall last test results
+- Reference ranges are based on healthy patients in the local population. Ask user if blood to be analyzed is from an apparently healthy patient. Make a flag to attach to healthy patient results in the text file log. 
