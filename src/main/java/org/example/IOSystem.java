@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.*;
@@ -12,6 +13,8 @@ public class IOSystem {
     static final String ANSI_RED_CODE = "\u001B[31m";
     static final String ANSI_RESET_CODE = "\u001B[0m";
     static final String LOG_SEPARATOR = "::";
+    public final int SEARCH_BY_NAME = 1;
+    public final int SEARCH_BY_DATE = 2;
     private Scanner input = new Scanner(System.in);
 
     //------------------
@@ -20,8 +23,7 @@ public class IOSystem {
     public String takePatientName() {
         System.out.println("Please enter your name: (last, first)");
 
-        String name = input.nextLine();
-        return name;
+        return input.nextLine();
     }
     public String displayMenu(String... args) {
         System.out.println("Would you like to:");
@@ -32,8 +34,7 @@ public class IOSystem {
             menuNumber++;
         }
 
-        String choice = input.nextLine();
-        return choice;
+        return input.nextLine();
     }
 
     public Map<String, Double> takeBloodValues(){
@@ -67,11 +68,11 @@ public class IOSystem {
         return bloodMap;
     }
     public String outputTable(List<BloodParameter> bloodParameterList, String name) {
-        String outputTable =
-                name + "\n" +
+        StringBuilder outputTable =
+                new StringBuilder(name + "\n" +
                         "\n" +
                         "Parameter                 |Result    |Normal Range   | Unit     |\n" +
-                        "--------------------------|----------|---------------|----------|\n";
+                        "--------------------------|----------|---------------|----------|\n");
 
         for (BloodParameter bloodParameter : bloodParameterList) {
             //create name cells for each bloodParameter
@@ -91,12 +92,12 @@ public class IOSystem {
 
             //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
             if (bloodParameter.isOutsideNormalRange()) {
-                outputTable += ANSI_RED_CODE + row + ANSI_RESET_CODE + "\n";
+                outputTable.append(ANSI_RED_CODE).append(row).append(ANSI_RESET_CODE).append("\n");
             } else {
-                outputTable += row + "\n";
+                outputTable.append(row).append("\n");
             }
         }
-        return outputTable;
+        return outputTable.toString();
     }
     public void writeToLog(String table){
         File logFile = new File("log.txt");
@@ -110,13 +111,53 @@ public class IOSystem {
             System.out.println("file not found");
         }
     }
+    public String searchLog(int nameOrDate){
+        if (nameOrDate == SEARCH_BY_NAME) {
+            System.out.println("Please enter the name you would like to search: (last, first)");
+        } else if (nameOrDate == SEARCH_BY_DATE) {
+            System.out.println("Please enter the date you would like to search: (do not include leading zeroes (01/02/2022))");
+        }
+
+        String searchTerm = input.nextLine();
+        File logFile = new File("log.txt");
+
+        StringBuilder matchingLogEntries = new StringBuilder();
+
+        try (Scanner dataInput = new Scanner(logFile)){
+            boolean isDesiredLogEntry = false; //This is used to start and stop adding lines to the output string.
+            String previousLine = "";
+
+            while (dataInput.hasNextLine()){
+                String currentLine = dataInput.nextLine() + "\n";
+                if (currentLine.contains(searchTerm)){
+                    isDesiredLogEntry = true;
+                    if (nameOrDate == SEARCH_BY_NAME) {
+                        matchingLogEntries.append(previousLine); //This adds the previous line (which includes the entry's date) to the output string.
+                    }
+                } else if (currentLine.contains(LOG_SEPARATOR)) {
+                    isDesiredLogEntry = false;
+                }
+                if (isDesiredLogEntry) {
+                    matchingLogEntries.append(currentLine);
+                }
+                previousLine = currentLine;
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Log file not found.");
+        }
+
+        if (matchingLogEntries.isEmpty()) {
+            return "No log entries matching that name.";
+        } else {
+            return matchingLogEntries.toString();
+        }
+    }
 
     //------------------
     //  Helper Methods
     //------------------
     private String createCell(String value, int cellSize) {
-        String cell = String.format("%" + (-cellSize) + "s", value) + "|";
-        return cell;
+        return String.format("%" + (-cellSize) + "s", value) + "|";
     }
 
     private String removeColor(String table) {

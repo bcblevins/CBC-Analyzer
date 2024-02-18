@@ -20,7 +20,6 @@ import java.util.*;
 public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static boolean isWrittenToFile = true;
-    public static String name;
     //BloodParameter is a class that is constructed with 4 values: Name, Low end of reference range, high end of reference range, and unit.
     //These will be used to determine if each blood value is in or out of range, and will store the result of the analysis.
     public static BloodParameter wbc = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
@@ -47,7 +46,7 @@ public class Main {
             if (choice.equals("1")) {
                 analysisMain();
             } else if (choice.equals("2")) {
-                System.out.println("not implemented yet");
+                searchMain();
             } else if (choice.equals("3")) {
                 break;
             }
@@ -76,23 +75,23 @@ public class Main {
             put(platelets.getName(), (double)rand.nextInt(190, 750));
         }};
 
-        
+
         return bloodMap;
     }
 
     public static void analysisMain() {
         System.out.println(IOSystem.ANSI_RED_CODE + "This program currently only evaluates based on canine blood normal ranges" + IOSystem.ANSI_RESET_CODE);
-        name = iOSys.takePatientName();
+        String name = iOSys.takePatientName();
 
-        String choice = iOSys.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to log)");
+        String inputOrGenerate = iOSys.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to log)");
         Map<String, Double> bloodInputMap;
 
         while (true) {
-            if (choice.equals("1")) {
+            if (inputOrGenerate.equals("1")) {
                 bloodInputMap = iOSys.takeBloodValues();
                 isWrittenToFile = true;
                 break;
-            } else if (choice.equals("2")) {
+            } else if (inputOrGenerate.equals("2")) {
                 bloodInputMap = randomBloodValueGenerator();
                 isWrittenToFile = false;
                 break;
@@ -126,6 +125,20 @@ public class Main {
             iOSys.writeToLog(outputTable);
         }
         System.out.println(outputTable);
+    }
+    public static void searchMain(){
+        while (true) {
+            String searchMethod = iOSys.displayMenu("Search by name", "Search by date", "Go back to main menu");
+            if (searchMethod.equals("1")) {
+                System.out.println(iOSys.searchLog(iOSys.SEARCH_BY_NAME));
+            } else if (searchMethod.equals("2")){
+                System.out.println(iOSys.searchLog(iOSys.SEARCH_BY_DATE));
+            } else if (searchMethod.equals("3")) {
+                return;
+            } else {
+                System.out.println("invalid selection");
+            }
+        }
     }
 
 }
