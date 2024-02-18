@@ -21,7 +21,6 @@ public class BloodParameter {
 
     //This method fills the analyzedBloodValue with a string depending on how it compares to the normal range
     public void analyzeParameter(double bloodValue) {
-        String bloodValueFormattedForOutput;
 
         //Create a result based on how bloodValue compares to normal range, then create an output string for return.
         if (bloodValue > this.rangeHigh){

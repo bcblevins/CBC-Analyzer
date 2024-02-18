@@ -1,0 +1,125 @@
+package org.example;
+
+import java.util.*;
+
+public class Analyzer {
+    private final IOSystem IO_SYSTEM = new IOSystem();
+    //BloodParameters are used to evaluate blood values based on reference ranges, as well as store analyzed values
+    private final BloodParameter WBC = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
+    private final BloodParameter RBC = new BloodParameter("Red Blood Cells", 4.8, 9.3, " 10^6/mcL");
+    private final BloodParameter HEMOGLOBIN = new BloodParameter("Hemoglobin", 12.1, 20.3, " g/dl");
+    private final BloodParameter HEMATOCRIT = new BloodParameter("Hematocrit", 36, 60, " %" );
+    private final BloodParameter MCV = new BloodParameter( "Mean Crepuscular Volume", 58, 79, " fL");
+    private final BloodParameter PLATELETS = new BloodParameter( "Platelets", 170, 400, " 10^3/mcL");
+
+    //BloodParameter objects are put into Map so that they can be matched up to the Map of blood values to be analyzed
+    private final Map<String, BloodParameter> BLOOD_PARAMETER_MAP = new HashMap<>() {{
+        put(WBC.getName(), WBC);
+        put(RBC.getName(), RBC);
+        put(HEMOGLOBIN.getName(), HEMOGLOBIN);
+        put(HEMATOCRIT.getName(), HEMATOCRIT);
+        put(MCV.getName(), MCV);
+        put(PLATELETS.getName(), PLATELETS);
+    }};
+    private Map<String, Double> randomBloodValueGenerator() {
+        Random rand = new Random();
+
+        /*
+        Create blood map with BloodParameter names for the keys and random double for the values. The range that the
+        random number will generate inside is just outside the normal range for each parameter, so we can demonstrate
+        what the output will look like for values outside the normal range.
+
+        Generating a random integer and dividing by 10.0/100.0 allows us to easily control the number of decimal places in line.
+        This methodology comes with problems like:
+          - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
+          - There is probably an explicit way to limit decimal length while keeping the types as doubles
+         */
+        Map<String, Double> bloodMap = new HashMap<>() {{
+            put(WBC.getName(), rand.nextInt(40, 150)/10.0);
+            put(RBC.getName(), rand.nextInt(450, 825)/100.0);
+            put(HEMOGLOBIN.getName(), rand.nextInt(119,189)/10.0);
+            put(HEMATOCRIT.getName(), (double)rand.nextInt(20, 75));
+            put(MCV.getName(), (double)rand.nextInt(60, 85));
+            put(PLATELETS.getName(), (double)rand.nextInt(190, 750));
+        }};
+
+
+        return bloodMap;
+    }
+    public void analyzeNewValues() {
+        IO_SYSTEM.printInRed("This program currently only evaluates based on canine blood normal ranges");
+        String name = IO_SYSTEM.takePatientName();
+
+        String inputOrGenerate = IO_SYSTEM.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to log)");
+        Map<String, Double> bloodInputMap;
+
+        boolean isWrittenToFile;
+        while (true) {
+            if (inputOrGenerate.equals("1")) {
+                bloodInputMap = IO_SYSTEM.takeBloodValues();
+                isWrittenToFile = true;
+                break;
+            } else if (inputOrGenerate.equals("2")) {
+                bloodInputMap = randomBloodValueGenerator();
+                isWrittenToFile = false;
+                break;
+            } else {
+                System.out.println("Please select a valid (number) option.");
+            }
+        }
+
+        //Loop through Map and call BloodParameter method analyzeParameter.
+        for (Map.Entry<String, Double> bloodValue : bloodInputMap.entrySet()) {
+            double currentValue = bloodValue.getValue();
+            String currentKey = bloodValue.getKey();
+
+            BloodParameter currentParameter = BLOOD_PARAMETER_MAP.get(currentKey);
+
+            currentParameter.analyzeParameter(currentValue);
+        }
+
+        //Create list of bloodParameters, so we can control the order for output.
+        List<BloodParameter> bloodParameterList = new ArrayList<>() {{
+            add(WBC);
+            add(RBC);
+            add(HEMOGLOBIN);
+            add(HEMATOCRIT);
+            add(MCV);
+            add(PLATELETS);
+        }};
+
+        String outputTable = IO_SYSTEM.createTable(bloodParameterList, name);
+        if (isWrittenToFile) {
+            IO_SYSTEM.writeToLog(outputTable);
+        }
+        System.out.println(outputTable);
+    }
+
+    //---------------------------
+    //BloodParameter name Getters
+    //---------------------------
+
+    public String getWbcName() {
+        return WBC.getName();
+    }
+
+    public String getRbcName() {
+        return RBC.getName();
+    }
+
+    public String getHemoglobinName() {
+        return HEMOGLOBIN.getName();
+    }
+
+    public String getHematocritName() {
+        return HEMATOCRIT.getName();
+    }
+
+    public String getMcvName() {
+        return MCV.getName();
+    }
+
+    public String getPlateletsName() {
+        return PLATELETS.getName();
+    }
+}

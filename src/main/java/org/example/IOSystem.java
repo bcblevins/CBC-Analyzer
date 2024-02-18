@@ -10,8 +10,8 @@ import static org.example.Main.*;    //need to come up with alternative. Not goo
 
 
 public class IOSystem {
-    static final String ANSI_RED_CODE = "\u001B[31m";
-    static final String ANSI_RESET_CODE = "\u001B[0m";
+    private final String ANSI_RED_CODE = "\u001B[31m";
+    private final String ANSI_RESET_CODE = "\u001B[0m";
     static final String LOG_SEPARATOR = "::";
     public final int SEARCH_BY_NAME = 1;
     public final int SEARCH_BY_DATE = 2;
@@ -21,7 +21,7 @@ public class IOSystem {
     // Class Methods
     //------------------
     public String takePatientName() {
-        System.out.println("Please enter your name: (last, first)");
+        System.out.println("Please enter patient name: (last, first)");
 
         return input.nextLine();
     }
@@ -43,31 +43,31 @@ public class IOSystem {
 
         try {
             System.out.println("White blood cell count:");
-            bloodMap.put(wbc.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getWbcName(), Double.parseDouble(input.nextLine()));
 
             System.out.println("Red blood cell count:");
-            bloodMap.put(rbc.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getRbcName(), Double.parseDouble(input.nextLine()));
 
             System.out.println("Hemoglobin:");
-            bloodMap.put(hemoglobin.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getHemoglobinName(), Double.parseDouble(input.nextLine()));
 
             System.out.println("Hematocrit percent:");
-            bloodMap.put(hematocrit.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getHematocritName(), Double.parseDouble(input.nextLine()));
 
             System.out.println("Mean crepuscular volume:");
-            bloodMap.put(mcv.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getMcvName(), Double.parseDouble(input.nextLine()));
 
             System.out.println("Platelet count:");
-            bloodMap.put(platelets.getName(), Double.parseDouble(input.nextLine()));
+            bloodMap.put(analyzer.getPlateletsName(), Double.parseDouble(input.nextLine()));
 
         } catch (Exception e) {
-            System.out.println("Looks like you entered an invalid input. Let's try again:");
+            System.out.println("Invalid input. Try again:");
             takeBloodValues();
         }
 
         return bloodMap;
     }
-    public String outputTable(List<BloodParameter> bloodParameterList, String name) {
+    public String createTable(List<BloodParameter> bloodParameterList, String name) {
         StringBuilder outputTable =
                 new StringBuilder(name + "\n" +
                         "\n" +
@@ -92,9 +92,11 @@ public class IOSystem {
 
             //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
             if (bloodParameter.isOutsideNormalRange()) {
-                outputTable.append(ANSI_RED_CODE).append(row).append(ANSI_RESET_CODE).append("\n");
+                outputTable.append(outlineInRed(row));
+                outputTable.append("\n");
             } else {
-                outputTable.append(row).append("\n");
+                outputTable.append(row);
+                outputTable.append("\n");
             }
         }
         return outputTable.toString();
@@ -105,7 +107,7 @@ public class IOSystem {
                 new FileOutputStream(logFile, true)
         )) {
             dataOutput.println(getDate());
-            dataOutput.println(removeColor(table));
+            dataOutput.println(removeColor(table)); //remove color so that log file is more readable.
             dataOutput.println(LOG_SEPARATOR);
         } catch (Exception e) {
             System.out.println("file not found");
@@ -129,7 +131,8 @@ public class IOSystem {
 
             while (dataInput.hasNextLine()){
                 String currentLine = dataInput.nextLine() + "\n";
-                if (currentLine.contains(searchTerm)){
+
+                if (currentLine.toUpperCase().contains(searchTerm.toUpperCase())){
                     isDesiredLogEntry = true;
                     if (nameOrDate == SEARCH_BY_NAME) {
                         matchingLogEntries.append(previousLine); //This adds the previous line (which includes the entry's date) to the output string.
@@ -138,7 +141,12 @@ public class IOSystem {
                     isDesiredLogEntry = false;
                 }
                 if (isDesiredLogEntry) {
-                    matchingLogEntries.append(currentLine);
+                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
+                        matchingLogEntries.append(outlineInRed(currentLine));
+                    } else {
+                        matchingLogEntries.append(currentLine);
+
+                    }
                 }
                 previousLine = currentLine;
             }
@@ -153,9 +161,9 @@ public class IOSystem {
         }
     }
 
-    //------------------
-    //  Helper Methods
-    //------------------
+    //----------------------
+    //  Helper/Small Methods
+    //----------------------
     private String createCell(String value, int cellSize) {
         return String.format("%" + (-cellSize) + "s", value) + "|";
     }
@@ -173,6 +181,12 @@ public class IOSystem {
         int year = currentDate.get(Calendar.YEAR);
 
         return month + "/" + day + "/" + year;
+    }
+    public void printInRed(String message) {
+        System.out.println(ANSI_RED_CODE + message + ANSI_RESET_CODE);
+    }
+    public String outlineInRed(String message) {
+        return ANSI_RED_CODE + message + ANSI_RESET_CODE;
     }
 
 }
