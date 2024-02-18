@@ -20,6 +20,7 @@ import java.util.*;
 public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static boolean isWrittenToFile = true;
+    public static String name;
     //BloodParameter is a class that is constructed with 4 values: Name, Low end of reference range, high end of reference range, and unit.
     //These will be used to determine if each blood value is in or out of range, and will store the result of the analysis.
     public static BloodParameter wbc = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
@@ -41,8 +42,49 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String name = iOSys.greetUserAndTakeName();
-        String choice = iOSys.displayMenu("Input your own blood values", "Generate random blood values (demo mode)");
+        while (true) {
+            String choice = iOSys.displayMenu("Analyze blood values", "Search old tests", "Quit");
+            if (choice.equals("1")) {
+                analysisMain();
+            } else if (choice.equals("2")) {
+                System.out.println("not implemented yet");
+            } else if (choice.equals("3")) {
+                break;
+            }
+        }
+    }
+
+    public static Map<String, Double> randomBloodValueGenerator() {
+        Random rand = new Random();
+
+        /*
+        Create blood map with BloodParameter names for the keys and random double for the values. The range that the
+        random number will generate inside is just outside the normal range for each parameter so we can demonstrate
+        what the output will look like for values outside the normal range.
+
+        Generating a random integer and dividing by 10.0/100.0 allows us to easily control the number of decimal places in line.
+        This methodology comes with problems like:
+          - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
+          - There is probably an explicit way to limit decimal length while keeping the types as doubles
+         */
+        Map<String, Double> bloodMap = new HashMap<>() {{
+            put(wbc.getName(), rand.nextInt(40, 150)/10.0);
+            put(rbc.getName(), rand.nextInt(450, 825)/100.0);
+            put(hemoglobin.getName(), rand.nextInt(119,189)/10.0);
+            put(hematocrit.getName(), (double)rand.nextInt(20, 75));
+            put(mcv.getName(), (double)rand.nextInt(60, 85));
+            put(platelets.getName(), (double)rand.nextInt(190, 750));
+        }};
+
+        
+        return bloodMap;
+    }
+
+    public static void analysisMain() {
+        System.out.println(IOSystem.ANSI_RED_CODE + "This program currently only evaluates based on canine blood normal ranges" + IOSystem.ANSI_RESET_CODE);
+        name = iOSys.takePatientName();
+
+        String choice = iOSys.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to log)");
         Map<String, Double> bloodInputMap;
 
         while (true) {
@@ -84,35 +126,6 @@ public class Main {
             iOSys.writeToLog(outputTable);
         }
         System.out.println(outputTable);
-
-
     }
-
-    public static Map<String, Double> randomBloodValueGenerator() {
-        Random rand = new Random();
-
-        /*
-        Create blood map with BloodParameter names for the keys and random double for the values. The range that the
-        random number will generate inside is just outside the normal range for each parameter so we can demonstrate
-        what the output will look like for values outside the normal range.
-
-        Generating a random integer and dividing by 10.0/100.0 allows us to easily control the number of decimal places in line.
-        This methodology comes with problems like:
-          - The range numbers would be much more clear if we could use variables instead to demonstrate why we are using those numbers.
-          - There is probably an explicit way to limit decimal length while keeping the types as doubles
-         */
-        Map<String, Double> bloodMap = new HashMap<>() {{
-            put(wbc.getName(), rand.nextInt(40, 150)/10.0);
-            put(rbc.getName(), rand.nextInt(450, 825)/100.0);
-            put(hemoglobin.getName(), rand.nextInt(119,189)/10.0);
-            put(hematocrit.getName(), (double)rand.nextInt(20, 75));
-            put(mcv.getName(), (double)rand.nextInt(60, 85));
-            put(platelets.getName(), (double)rand.nextInt(190, 750));
-        }};
-
-        
-        return bloodMap;
-    }
-
 
 }

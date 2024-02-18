@@ -17,8 +17,7 @@ public class IOSystem {
     //------------------
     // Class Methods
     //------------------
-    public String greetUserAndTakeName() {
-        System.out.println(ANSI_RED_CODE + "This program currently only evaluates based on canine blood normal ranges" + ANSI_RESET_CODE);
+    public String takePatientName() {
         System.out.println("Please enter your name: (last, first)");
 
         String name = input.nextLine();
@@ -115,18 +114,18 @@ public class IOSystem {
     //------------------
     //  Helper Methods
     //------------------
-    public String createCell(String value, int cellSize) {
+    private String createCell(String value, int cellSize) {
         String cell = String.format("%" + (-cellSize) + "s", value) + "|";
         return cell;
     }
 
-    public String removeColor(String table) {
+    private String removeColor(String table) {
         String colorlessTable;
         colorlessTable = table.replace(ANSI_RED_CODE, "");
         colorlessTable = colorlessTable.replace(ANSI_RESET_CODE, "");
         return colorlessTable;
     }
-    public String getDate() {
+    private String getDate() {
         Calendar currentDate = new GregorianCalendar();
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
         int month = 1 + currentDate.get(Calendar.MONTH); //1 is added because months are zero based

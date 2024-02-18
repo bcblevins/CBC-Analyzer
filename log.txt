@@ -1,0 +1,13 @@
+2/17/2024
+example, example
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |0.0(-)    |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |0.0(-)    |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |0.0(-)    |12.1 - 20.3    | g/dl     |
+Hematocrit                |0.0(-)    |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |0.0(-)    |58.0 - 79.0    | fL       |
+Platelets                 |0.0(-)    |170.0 - 400.0  | 10^3/mcL |
+
+::
