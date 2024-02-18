@@ -1,5 +1,8 @@
 package org.example;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static org.example.Main.*;    //need to come up with alternative. Not good style?
@@ -8,10 +11,20 @@ import static org.example.Main.*;    //need to come up with alternative. Not goo
 public class IOSystem {
     static final String ANSI_RED_CODE = "\u001B[31m";
     static final String ANSI_RESET_CODE = "\u001B[0m";
+    static final String LOG_SEPARATOR = "::";
     private Scanner input = new Scanner(System.in);
 
-    public String displayMenu(String... args) {
+    //------------------
+    // Class Methods
+    //------------------
+    public String greetUserAndTakeName() {
         System.out.println(ANSI_RED_CODE + "This program currently only evaluates based on canine blood normal ranges" + ANSI_RESET_CODE);
+        System.out.println("Please enter your name: (last, first)");
+
+        String name = input.nextLine();
+        return name;
+    }
+    public String displayMenu(String... args) {
         System.out.println("Would you like to:");
         int menuNumber = 1;
 
@@ -54,9 +67,12 @@ public class IOSystem {
 
         return bloodMap;
     }
-    public void outputTable(List<BloodParameter> bloodParameterList) {
-        System.out.println("Parameter                 |Result    |Normal Range   | Unit     |");
-        System.out.println("--------------------------|----------|---------------|----------|");
+    public String outputTable(List<BloodParameter> bloodParameterList, String name) {
+        String outputTable =
+                name + "\n" +
+                        "\n" +
+                        "Parameter                 |Result    |Normal Range   | Unit     |\n" +
+                        "--------------------------|----------|---------------|----------|\n";
 
         for (BloodParameter bloodParameter : bloodParameterList) {
             //create name cells for each bloodParameter
@@ -76,15 +92,47 @@ public class IOSystem {
 
             //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
             if (bloodParameter.isOutsideNormalRange()) {
-                System.out.println(ANSI_RED_CODE + row + ANSI_RESET_CODE);
+                outputTable += ANSI_RED_CODE + row + ANSI_RESET_CODE + "\n";
             } else {
-                System.out.println(row);
+                outputTable += row + "\n";
             }
+        }
+        return outputTable;
+    }
+    public void writeToLog(String table){
+        File logFile = new File("log.txt");
+        try (PrintWriter dataOutput = new PrintWriter(
+                new FileOutputStream(logFile, true)
+        )) {
+            dataOutput.println(getDate());
+            dataOutput.println(removeColor(table));
+            dataOutput.println(LOG_SEPARATOR);
+        } catch (Exception e) {
+            System.out.println("file not found");
         }
     }
 
+    //------------------
+    //  Helper Methods
+    //------------------
     public String createCell(String value, int cellSize) {
         String cell = String.format("%" + (-cellSize) + "s", value) + "|";
         return cell;
     }
+
+    public String removeColor(String table) {
+        String colorlessTable;
+        colorlessTable = table.replace(ANSI_RED_CODE, "");
+        colorlessTable = colorlessTable.replace(ANSI_RESET_CODE, "");
+        return colorlessTable;
+    }
+    public String getDate() {
+        Calendar currentDate = new GregorianCalendar();
+        int day = currentDate.get(Calendar.DAY_OF_MONTH);
+        int month = 1 + currentDate.get(Calendar.MONTH); //1 is added because months are zero based
+        int year = currentDate.get(Calendar.YEAR);
+
+        return month + "/" + day + "/" + year;
+    }
+
 }

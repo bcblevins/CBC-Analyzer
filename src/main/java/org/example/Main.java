@@ -19,6 +19,7 @@ import java.util.*;
 
 public class Main {
     public static IOSystem iOSys = new IOSystem();
+    public static boolean isWrittenToFile = true;
     //BloodParameter is a class that is constructed with 4 values: Name, Low end of reference range, high end of reference range, and unit.
     //These will be used to determine if each blood value is in or out of range, and will store the result of the analysis.
     public static BloodParameter wbc = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
@@ -40,15 +41,18 @@ public class Main {
 
     public static void main(String[] args) {
 
+        String name = iOSys.greetUserAndTakeName();
         String choice = iOSys.displayMenu("Input your own blood values", "Generate random blood values (demo mode)");
         Map<String, Double> bloodInputMap;
 
         while (true) {
             if (choice.equals("1")) {
                 bloodInputMap = iOSys.takeBloodValues();
+                isWrittenToFile = true;
                 break;
             } else if (choice.equals("2")) {
                 bloodInputMap = randomBloodValueGenerator();
+                isWrittenToFile = false;
                 break;
             } else {
                 System.out.println("Please select a valid (number) option.");
@@ -75,7 +79,12 @@ public class Main {
             add(platelets);
         }};
 
-        iOSys.outputTable(bloodParameterList);
+        String outputTable = iOSys.outputTable(bloodParameterList, name);
+        if (isWrittenToFile) {
+            iOSys.writeToLog(outputTable);
+        }
+        System.out.println(outputTable);
+
 
     }
 
