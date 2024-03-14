@@ -1,8 +1,6 @@
 # CBC-Analyzer
 
-This program is designed to take a series of blood values from the user, compare them to reference ranges, and output the results in a table.
-
-Also included is a demo mode where blood values are randomly generated.
+This program takes blood values from the user and compares them to normal ranges. Results are recorded into a patient record system. The program also supports search functionalities by test type, date, and flags.
 
 ## Current Capabilities
 
@@ -32,7 +30,7 @@ Also included is a demo mode where blood values are randomly generated.
   
 
 - Patient Record System
-  - n/a
+  - Search patient by name
   
 
 - Search
