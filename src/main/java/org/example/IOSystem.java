@@ -15,7 +15,8 @@ public class IOSystem {
     private final String SEPARATOR = "---------------------------------------------------------";
     private final String ANSI_RED_CODE = "\u001B[31m";
     private final String ANSI_RESET_CODE = "\u001B[0m";
-    static final String FILE_SEPARATOR = "::";
+    static final String TEST_SEPARATOR = "::";
+    static final String PATIENT_INFO_SEPARATOR = ";;";
     public final int SEARCH_BY_NAME = 1;
     public final int SEARCH_BY_DATE = 2;
     private Scanner input = new Scanner(System.in);
@@ -23,11 +24,7 @@ public class IOSystem {
     //------------------
     // Class Methods
     //------------------
-    public String takePatientName() {
-        System.out.println("Please enter patient name: (last, first)");
 
-        return input.nextLine();
-    }
     public String displayMenu(String title, String... args) {
         //Display options
         System.out.println(SEPARATOR);
@@ -83,9 +80,10 @@ public class IOSystem {
 
         return bloodMap;
     }
-    public String createTable(List<BloodParameter> bloodParameterList, String name) {
+    public String createTable(List<BloodParameter> bloodParameterList, String name, String flags) {
         StringBuilder outputTable =
-                new StringBuilder(name + "\n" +
+                new StringBuilder(name + "\n"
+                        + patient.getAgeFlag() + flags + "\n" +
                         "\n" +
                         "Parameter                 |Result    |Normal Range   | Unit     |\n" +
                         "--------------------------|----------|---------------|----------|\n");
@@ -117,46 +115,103 @@ public class IOSystem {
         }
         return outputTable.toString();
     }
-    public void writeToRecord(String table){
+    public void writeTestToRecord(String table){
         File logFile = new File(patient.getRecordFilePath());
         try (PrintWriter dataOutput = new PrintWriter(
                 new FileOutputStream(logFile, true)
         )) {
             dataOutput.println(getDate());
             dataOutput.println(removeColor(table)); //remove color so that log file is more readable.
-            dataOutput.println(FILE_SEPARATOR);
+            dataOutput.println(TEST_SEPARATOR);
         } catch (Exception e) {
             System.out.println("Could not write to patient record.");
         }
     }
-    public String searchLog(int nameOrDate){
-        if (nameOrDate == SEARCH_BY_NAME) {
-            System.out.println("Please enter the name you would like to search: (last, first)");
-        } else if (nameOrDate == SEARCH_BY_DATE) {
-            System.out.println("Please enter the date you would like to search: (do not include leading zeroes (01/02/2022))");
+
+
+
+    public String searchLog(String filters){
+        List<String> typeFilters = new ArrayList<>();
+        List<String> dateFilters = new ArrayList<>();
+        List<String> flagFilters = new ArrayList<>();
+        String[] filtersArray = filters.split(",");
+
+        //add filters to their respective lists, remove filter identifier (first character)
+        for (String filter : filtersArray) {
+            if (filter.substring(0,1).equals("t")) {
+                typeFilters.add(filter.substring(1));
+            } else if (filter.substring(0,1).equals("d")) {
+                dateFilters.add(filter.substring(1));
+            } else if (filter.substring(0,1).equals("f")) {
+                flagFilters.add(filter.substring(1));
+            }
         }
 
-        String searchTerm = input.nextLine();
-        File logFile = new File("log.txt");
+        //TODO: DELETE
+        //String searchTerm = input.nextLine();
+
+        File patientFile = new File(patient.getRecordFilePath());
+
 
         StringBuilder matchingLogEntries = new StringBuilder();
 
-        try (Scanner dataInput = new Scanner(logFile)){
-            boolean isDesiredLogEntry = false; //This is used to start and stop adding lines to the output string.
-            String previousLine = "";
+        //understand rest of method, leave comments where things wont work
 
+        try (Scanner dataInput = new Scanner(patientFile)){
+            //These are used to start and stop adding lines to the output string.
+            boolean isDateMatch = false;
+            boolean isTypeMatch = false;
+            boolean isFlagMatch = false;
+            boolean isPreviousLinesNeeded = true;
+
+            //we need this to add the lines before a type or flag match.
+            List<String> previousLines = new ArrayList<>();
+            previousLines.add("");
+            previousLines.add("");
+
+            boolean isPatientInfo = true;
             while (dataInput.hasNextLine()){
                 String currentLine = dataInput.nextLine() + "\n";
-
-                if (currentLine.toUpperCase().contains(searchTerm.toUpperCase())){
-                    isDesiredLogEntry = true;
-                    if (nameOrDate == SEARCH_BY_NAME) {
-                        matchingLogEntries.append(previousLine); //This adds the previous line (which includes the entry's date) to the output string.
-                    }
-                } else if (currentLine.contains(FILE_SEPARATOR)) {
-                    isDesiredLogEntry = false;
+                //skips patient info and separator
+                if (isPatientInfo && !currentLine.contains(PATIENT_INFO_SEPARATOR)) {
+                    continue;
+                } else if (isPatientInfo && currentLine.contains(PATIENT_INFO_SEPARATOR)) {
+                    isPatientInfo = false;
+                    continue;
                 }
-                if (isDesiredLogEntry) {
+
+                if (dateFilters.stream().anyMatch(currentLine::contains)){           //LIST.stream().anyMatch(STRING::contains) will see if STRING contains any of the elements in LIST
+                    isDateMatch = true;
+                } else if (typeFilters.stream().anyMatch(currentLine::contains)) {
+                    isTypeMatch = true;
+                } else if (flagFilters.stream().anyMatch(currentLine::contains)) {
+                    isFlagMatch = true;
+                }
+                if (isDateMatch) {
+                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
+                        matchingLogEntries.append(outlineInRed(currentLine));
+                    } else {
+                        matchingLogEntries.append(currentLine);
+                    }
+                } else if (isTypeMatch) {
+                    if (isPreviousLinesNeeded) {
+                        //add the most immediate previous line, in this case the date line
+                        matchingLogEntries.append(previousLines.get(1));
+                        isPreviousLinesNeeded = false;
+                    }
+                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
+                        matchingLogEntries.append(outlineInRed(currentLine));
+                    } else {
+                        matchingLogEntries.append(currentLine);
+
+                    }
+                } else if (isFlagMatch) {
+                    if (isPreviousLinesNeeded) {
+                        //add the last two lines, in this case the date and type lines
+                        matchingLogEntries.append(previousLines.get(0));
+                        matchingLogEntries.append(previousLines.get(1));
+                        isPreviousLinesNeeded = false;
+                    }
                     if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
                         matchingLogEntries.append(outlineInRed(currentLine));
                     } else {
@@ -164,22 +219,32 @@ public class IOSystem {
 
                     }
                 }
-                previousLine = currentLine;
+                previousLines.add(currentLine);
+                previousLines.remove(0);
+
+                if (currentLine.contains(TEST_SEPARATOR)) {
+                    isDateMatch = false;
+                    isTypeMatch = false;
+                    isFlagMatch = false;
+                    isPreviousLinesNeeded = true;
+                }
             }
         } catch (FileNotFoundException e) {
             System.out.println("Log file not found.");
         }
 
         if (matchingLogEntries.isEmpty()) {
-            return "No log entries matching that name.";
+            return "No log entries matching selected filters.";
         } else {
             return matchingLogEntries.toString();
         }
     }
+
+
+
     public Patient selectPatientRecord(String patientID){
         File patientFile = new File ("src/main/resources/patient-records/" + patientID + ".dat");
         if (patientFile.exists()) {
-            System.out.println("This patient has a record on file.");
             return getPatientRecord(patientFile);
         } else {
             System.out.println("No patient with that ID was found.");
@@ -233,7 +298,8 @@ public class IOSystem {
                     + species + "\n"
                     + dateOfBirth + "\n"
                     + flagsRaw + "\n"
-                    + FILE_SEPARATOR);
+                    + "-" + "\n"
+                    + PATIENT_INFO_SEPARATOR);
         } catch (FileNotFoundException e) {
             System.out.println("There was an error writing to patient file.");
         }
@@ -248,7 +314,7 @@ public class IOSystem {
                 String currentLine = dataInput.nextLine();
                 if (currentLine.equals("-")) {
                     continue;
-                } else if (currentLine.equals(FILE_SEPARATOR)) {
+                } else if (currentLine.equals(PATIENT_INFO_SEPARATOR)) {
                     break;
                 }
                 patientInfo.add(currentLine);
@@ -284,12 +350,7 @@ public class IOSystem {
         return colorlessTable;
     }
     private String getDate() {
-        Calendar currentDate = new GregorianCalendar();
-        int day = currentDate.get(Calendar.DAY_OF_MONTH);
-        int month = 1 + currentDate.get(Calendar.MONTH); //1 is added because months are zero based
-        int year = currentDate.get(Calendar.YEAR);
-
-        return month + "/" + day + "/" + year;
+        return LocalDate.now().toString();
     }
     public void printInRed(String message) {
         System.out.println(ANSI_RED_CODE + message + ANSI_RESET_CODE);
@@ -301,5 +362,15 @@ public class IOSystem {
         System.out.println(prompt);
         return input.nextLine();
     }
+    public void waitForUser() {
+        promptForInput("Press enter when ready");
+        System.out.println(SEPARATOR);
+    }
 
+    //old methods I'm too scared to delete
+    //    public String takePatientName() {
+//        System.out.println("Please enter patient name: (last, first)");
+//
+//        return input.nextLine();
+//    }
 }

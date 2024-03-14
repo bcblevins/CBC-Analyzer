@@ -1,0 +1,51 @@
+10175
+-
+Boy, Good
+CM
+Canine
+2011-02-04
+hypothyroidism,proteinuria
+-
+;;
+2024-03-14
+CBC
+post_thyroid_pill,hypothyroidism
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |6.8       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.8       |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |18.4      |12.1 - 20.3    | g/dl     |
+Hematocrit                |54.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |61.0      |58.0 - 79.0    | fL       |
+Platelets                 |341.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+hypothyroidism,lethargic,suspect_anemia
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |7.1       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.17      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |12.1      |12.1 - 20.3    | g/dl     |
+Hematocrit                |73.0(+)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |75.0      |58.0 - 79.0    | fL       |
+Platelets                 |552.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+hypothyroidism,healthy
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |14.6      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |5.62      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |11.9(-)   |12.1 - 20.3    | g/dl     |
+Hematocrit                |45.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |74.0      |58.0 - 79.0    | fL       |
+Platelets                 |420.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::

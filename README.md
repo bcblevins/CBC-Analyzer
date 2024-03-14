@@ -6,15 +6,36 @@ Also included is a demo mode where blood values are randomly generated.
 
 ## Current Capabilities
 
-- Take blood values and patient name as input 
-- Generate random values for demonstration purposes
-- Compare values to reference ranges for dogs
-- Log non-generated blood analyses
-- Search log for previous tests by name or date
+- Analyzer
+  - The user is prompted for each blood value the analyzer supports. Supported species include: canine.
+  - Values are compared to normal ranges, then displayed in a table where abnormalities are highlighted and indicated as higher (+) or lower (-) than normal.
+  - The tables are recorded to the patient record.  
+  
+
+- Patient record system
+   - Patient information is stored in separate data files. Below the patient information is a log of all tests in that patient's history.
+   - Each test entry contains the date the test was run, the type of test, flags, and test result table.
+   - Flags are used to give context to test results and to allow flag-based searching.
+   - New patient records can be made if the given patient ID (chart) number is not found in the records.
+  
+
+- Search
+  - Patient records can be searched by test type, date, and flags.
+  - Multiple search filters can be used at once.
+  - Currently, the search will return any test result that matches any of the filters the user selected.
 
 ## Potential Future Capabilities
 
-- Provide support for multiple species
-- Provide support for a greater number of CBC parameters
-- Recall most recent test results
-- Reference ranges are based on healthy patients in the local population. Ask user if blood to be analyzed is from an apparently healthy patient. Make a flag to attach to healthy patient results in the text file log. 
+- Analyzer
+  - Currently, the analyzer has hard coded reference ranges for only canine patients. I'd like the analyzer to read reference ranges from data files for multiple different species. The reference ranges could then be updated as the population normal ranges fluctuate.
+  - Currently, the analyzer only supports CBC testing. I'd like to provide support for a greater number of test types, as well as combination tests (chemistry+CBC)
+  
+
+- Patient Record System
+  - n/a
+  
+
+- Search
+  - Recall most recent test
+  - Find all abnormal tests
+  - 

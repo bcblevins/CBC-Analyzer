@@ -47,16 +47,23 @@ public class Analyzer {
         return bloodMap;
     }
     public void analyzeNewValues() {
-        String inputOrGenerate = IO_SYSTEM.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)");
+        String choice = IO_SYSTEM.displayMenu("Would you like to:", "Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)", "Go back to patient menu");
         Map<String, Double> bloodInputMap = new HashMap<>();
+        String flags = "";
 
-        boolean isWrittenToFile = false;
+        //TODO: MAKE THIS FALSE
+        boolean isWrittenToFile = true;
 
-        if (inputOrGenerate.equals("1")) {
+        if (choice.equals("1")) {
             bloodInputMap = IO_SYSTEM.takeBloodValues();
+            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             isWrittenToFile = true;
-        } else if (inputOrGenerate.equals("2")) {
+        } else if (choice.equals("2")) {
+            //TODO: REMOVE THIS LINE
+            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             bloodInputMap = randomBloodValueGenerator();
+        } else if (choice.equals("3")) {
+            return;
         }
 
 
@@ -80,9 +87,9 @@ public class Analyzer {
             add(PLATELETS);
         }};
 
-        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC");
+        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags);
         if (isWrittenToFile) {
-            IO_SYSTEM.writeToRecord(outputTable);
+            IO_SYSTEM.writeTestToRecord(outputTable);
         }
         System.out.println(outputTable);
     }
