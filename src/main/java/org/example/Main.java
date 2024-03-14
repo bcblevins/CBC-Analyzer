@@ -3,11 +3,21 @@ package org.example;
 public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static Analyzer analyzer = new Analyzer();
+    public static Patient patient;
 
     public static void main(String[] args) {
+        String patientID = iOSys.promptForInput("Please enter a patient ID");
+
+        patient = iOSys.selectPatientRecord(patientID);
+
+        if (patient.isNullPatient()) {
+            return;
+        }
+
+
 
         while (true) {
-            String choice = iOSys.displayMenu("Analyze blood values", "Search old tests", "Quit");
+            String choice = iOSys.displayMenu("Would you like to ", "Analyze blood values", "Search old tests", "Quit");
             if (choice.equals("1")) {
                 analyzer.analyzeNewValues();
             } else if (choice.equals("2")) {

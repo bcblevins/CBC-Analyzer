@@ -47,26 +47,18 @@ public class Analyzer {
         return bloodMap;
     }
     public void analyzeNewValues() {
-        IO_SYSTEM.printInRed("This program currently only evaluates based on canine blood normal ranges");
-        String name = IO_SYSTEM.takePatientName();
+        String inputOrGenerate = IO_SYSTEM.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)");
+        Map<String, Double> bloodInputMap = new HashMap<>();
 
-        String inputOrGenerate = IO_SYSTEM.displayMenu("Input your own blood values", "Generate random blood values (demo mode - will not save to log)");
-        Map<String, Double> bloodInputMap;
+        boolean isWrittenToFile = false;
 
-        boolean isWrittenToFile;
-        while (true) {
-            if (inputOrGenerate.equals("1")) {
-                bloodInputMap = IO_SYSTEM.takeBloodValues();
-                isWrittenToFile = true;
-                break;
-            } else if (inputOrGenerate.equals("2")) {
-                bloodInputMap = randomBloodValueGenerator();
-                isWrittenToFile = false;
-                break;
-            } else {
-                System.out.println("Please select a valid (number) option.");
-            }
+        if (inputOrGenerate.equals("1")) {
+            bloodInputMap = IO_SYSTEM.takeBloodValues();
+            isWrittenToFile = true;
+        } else if (inputOrGenerate.equals("2")) {
+            bloodInputMap = randomBloodValueGenerator();
         }
+
 
         //Loop through Map and call BloodParameter method analyzeParameter.
         for (Map.Entry<String, Double> bloodValue : bloodInputMap.entrySet()) {
@@ -88,9 +80,9 @@ public class Analyzer {
             add(PLATELETS);
         }};
 
-        String outputTable = IO_SYSTEM.createTable(bloodParameterList, name);
+        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC");
         if (isWrittenToFile) {
-            IO_SYSTEM.writeToLog(outputTable);
+            IO_SYSTEM.writeToRecord(outputTable);
         }
         System.out.println(outputTable);
     }
