@@ -1,0 +1,247 @@
+115654
+-
+Boy, Sick
+CM
+Canine
+2014-12-20
+intermittent_weight_loss,arthritis
+-
+;;
+2024-03-14
+CBC
+adolescent,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |12.6      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |5.37      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.6      |12.1 - 20.3    | g/dl     |
+Hematocrit                |50.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |83.0(+)   |58.0 - 79.0    | fL       |
+Platelets                 |250.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |12.8      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |5.26      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.6      |12.1 - 20.3    | g/dl     |
+Hematocrit                |64.0(+)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |60.0      |58.0 - 79.0    | fL       |
+Platelets                 |745.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |10.6      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |4.73(-)   |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |14.8      |12.1 - 20.3    | g/dl     |
+Hematocrit                |34.0(-)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |80.0(+)   |58.0 - 79.0    | fL       |
+Platelets                 |464.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |7.7       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |7.91      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |18.5      |12.1 - 20.3    | g/dl     |
+Hematocrit                |29.0(-)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |67.0      |58.0 - 79.0    | fL       |
+Platelets                 |253.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |9.2       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.09      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |13.0      |12.1 - 20.3    | g/dl     |
+Hematocrit                |21.0(-)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |70.0      |58.0 - 79.0    | fL       |
+Platelets                 |368.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |7.8       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.02      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |15.7      |12.1 - 20.3    | g/dl     |
+Hematocrit                |37.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |71.0      |58.0 - 79.0    | fL       |
+Platelets                 |485.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |7.7       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.22      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.0      |12.1 - 20.3    | g/dl     |
+Hematocrit                |55.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |64.0      |58.0 - 79.0    | fL       |
+Platelets                 |715.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |11.9      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |7.13      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |18.2      |12.1 - 20.3    | g/dl     |
+Hematocrit                |73.0(+)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |77.0      |58.0 - 79.0    | fL       |
+Platelets                 |288.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |14.4      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |8.17      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |12.7      |12.1 - 20.3    | g/dl     |
+Hematocrit                |64.0(+)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |67.0      |58.0 - 79.0    | fL       |
+Platelets                 |745.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |12.1      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |5.99      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.1      |12.1 - 20.3    | g/dl     |
+Hematocrit                |38.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |83.0(+)   |58.0 - 79.0    | fL       |
+Platelets                 |605.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,weight_loss
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |90.2(+)   |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |7.08      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |13.0      |12.1 - 20.3    | g/dl     |
+Hematocrit                |45.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |75.0      |58.0 - 79.0    | fL       |
+Platelets                 |151.0(-)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |4.6       |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |6.0       |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |15.8      |12.1 - 20.3    | g/dl     |
+Hematocrit                |57.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |68.0      |58.0 - 79.0    | fL       |
+Platelets                 |490.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |12.1      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |6.08      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.2      |12.1 - 20.3    | g/dl     |
+Hematocrit                |55.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |68.0      |58.0 - 79.0    | fL       |
+Platelets                 |684.0(+)  |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,weight_loss
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |50.0(+)   |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |5.43      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |18.1      |12.1 - 20.3    | g/dl     |
+Hematocrit                |50.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |60.0      |58.0 - 79.0    | fL       |
+Platelets                 |229.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |14.3      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |4.96      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |18.7      |12.1 - 20.3    | g/dl     |
+Hematocrit                |59.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |63.0      |58.0 - 79.0    | fL       |
+Platelets                 |342.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |12.1      |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |6.49      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.4      |12.1 - 20.3    | g/dl     |
+Hematocrit                |26.0(-)   |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |81.0(+)   |58.0 - 79.0    | fL       |
+Platelets                 |356.0     |170.0 - 400.0  | 10^3/mcL |
+
+::
+2024-03-14
+CBC
+adult,weight_loss
+
+Parameter                 |Result    |Normal Range   | Unit     |
+--------------------------|----------|---------------|----------|
+White Blood Cells         |39.7(+)   |4.0 - 15.5     | 10^3/mcL |
+Red Blood Cells           |7.53      |4.8 - 9.3      | 10^6/mcL |
+Hemoglobin                |16.9      |12.1 - 20.3    | g/dl     |
+Hematocrit                |51.0      |36.0 - 60.0    | %        |
+Mean Crepuscular Volume   |72.0      |58.0 - 79.0    | fL       |
+Platelets                 |257.0     |170.0 - 400.0  | 10^3/mcL |
+
+::

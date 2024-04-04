@@ -31,9 +31,9 @@ This program takes blood values from the user and compares them to normal ranges
 
 - Patient Record System
   - Search patient by name
+  - Change tags after patient creation
   
 
 - Search
   - Recall most recent test
   - Find all abnormal tests
-  - 

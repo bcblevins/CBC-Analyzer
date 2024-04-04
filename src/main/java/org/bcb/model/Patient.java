@@ -1,6 +1,5 @@
-package org.example;
+package org.bcb.model;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;

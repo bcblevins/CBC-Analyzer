@@ -1,4 +1,7 @@
-package org.example;
+package org.bcb.app;
+
+import org.bcb.model.BloodParameter;
+import org.bcb.model.Patient;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-import static org.example.Main.*;    //need to come up with alternative. Not good style?
+import static org.bcb.app.Main.*;    //need to come up with alternative. Not good style?
 
 
 public class IOSystem {
@@ -83,7 +86,7 @@ public class IOSystem {
     public String createTable(List<BloodParameter> bloodParameterList, String name, String flags) {
         StringBuilder outputTable =
                 new StringBuilder(name + "\n"
-                        + patient.getAgeFlag() + flags + "\n" +
+                        + patient.getAgeFlag() + "," + flags + "\n" +
                         "\n" +
                         "Parameter                 |Result    |Normal Range   | Unit     |\n" +
                         "--------------------------|----------|---------------|----------|\n");
@@ -365,6 +368,9 @@ public class IOSystem {
     public void waitForUser() {
         promptForInput("Press enter when ready");
         System.out.println(SEPARATOR);
+    }
+    public static void printSeparator(){
+        System.out.println("---------------------------------------------------------");
     }
 
     //old methods I'm too scared to delete

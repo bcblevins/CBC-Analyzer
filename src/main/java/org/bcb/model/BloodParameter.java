@@ -1,7 +1,9 @@
-package org.example;
+package org.bcb.model;
 
 
 public class BloodParameter {
+
+    private int id;
     private String name;
     private double rangeLow;
     private double rangeHigh;
@@ -34,6 +36,10 @@ public class BloodParameter {
         } else {
             this.analyzedBloodValue = String.valueOf(bloodValue);
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getAnalyzedBloodValue() {

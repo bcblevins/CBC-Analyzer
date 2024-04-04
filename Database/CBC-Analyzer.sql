@@ -1,0 +1,105 @@
+DROP TABLE IF EXISTS test_tag;
+DROP TABLE IF EXISTS patient_tag;
+DROP TABLE IF EXISTS result;
+DROP TABLE IF EXISTS test;
+DROP TABLE IF EXISTS parameter;
+DROP TABLE IF EXISTS patient;
+DROP TABLE IF EXISTS tag;
+
+CREATE TABLE "patient" (
+  "patient_id" serial PRIMARY KEY,
+  "name" varchar(50) NOT NULL,
+  "sex" varchar(2) NOT NULL CHECK ("sex" IN ('F', 'M', 'SF', 'CM')),
+  "species" varchar(20) NOT NULL,
+  "birthday" date NOT NULL
+);
+
+CREATE TABLE "test" (
+  "test_id" serial PRIMARY KEY,
+  "patient_id" int NOT NULL,
+  "time_stamp" timestamp NOT NULL
+);
+
+CREATE TABLE "result" (
+  "result_id" serial PRIMARY KEY,
+  "test_id" int NOT NULL,
+  "parameter_id" int NOT NULL,
+  "result_value" numeric NOT NULL CHECK (result_value >= 0)
+);
+
+CREATE TABLE "parameter" (
+  "parameter_id" serial PRIMARY KEY,
+  "name" varchar(50) NOT NULL,
+  "range_low" numeric NOT NULL CHECK (range_low >= 0),
+  "range_high" numeric NOT NULL CHECK (range_high > range_low),
+  "unit" varchar(50) NOT NULL
+);
+
+CREATE TABLE "tag" (
+  "tag_id" serial PRIMARY KEY,
+  "name" varchar(50) NOT NULL,
+  "is_diagnosis" boolean DEFAULT false
+);
+
+CREATE TABLE "patient_tag" (
+  "patient_id" int NOT NULL,
+  "tag_id" int NOT NULL,
+  CONSTRAINT PK_patient_tag PRIMARY KEY (patient_id, tag_id)
+);
+
+CREATE TABLE "test_tag" (
+  "test_id" int NOT NULL,
+  "tag_id" int NOT NULL,
+  CONSTRAINT PK_test_tag PRIMARY KEY (test_id, tag_id)
+);
+
+ALTER TABLE "test" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
+
+ALTER TABLE "result" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id");
+
+ALTER TABLE "result" ADD FOREIGN KEY ("parameter_id") REFERENCES "parameter" ("parameter_id");
+
+ALTER TABLE "patient_tag" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
+
+ALTER TABLE "patient_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
+
+ALTER TABLE "test_tag" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id");
+
+ALTER TABLE "test_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
+
+-- Filling Tables
+
+INSERT INTO patient (name, sex, species, birthday) values 
+  ('Charlie Blevins', 'SF', 'Canine', '2013-03-14'),
+  ('Good Boy', 'CM', 'Canine', '2011-02-04'),
+  ('Killer Blevins', 'CM', 'Canine', '2012-07-02'),
+  ('Sick Girl', 'F', 'Canine', '2014-12-20');
+
+
+INSERT INTO tag (name, is_diagnosis) values
+	('healthy', false),
+	('hypothyroidism', true),
+	('proteinuria', true),
+	('friendly', false),
+	('periodontal_disease', true),
+	('skin_mass', true),
+	('hyporexia', true),
+	('arthritis', true),
+	('weight_loss', true);
+	
+INSERT INTO parameter (name, range_low, range_high, unit) values
+	('White Blood Cells', 4, 15.5, '10^3/mcL'),
+	('Red Blood Cells', 4.8, 9.3, '10^6/mcL'),
+	('Hemoglobin', 12.1, 20.3, 'g/dl'),
+	('Hematocrit', 36, 60, '%'),
+	('Mean Crepuscular Volume', 58, 79, 'fL'),
+	('Platelets', 170, 400, '10^3/mcL');
+	
+INSERT INTO patient_tag (patient_id, tag_id) values
+	(1, 1),
+	(1, 4);
+	
+select tag.name 
+from patient
+join patient_tag on patient_tag.patient_id = patient.patient_id
+join tag on tag.tag_id = patient_tag.tag_id;

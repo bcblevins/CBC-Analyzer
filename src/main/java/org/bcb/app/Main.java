@@ -1,4 +1,6 @@
-package org.example;
+package org.bcb.app;
+
+import org.bcb.model.Patient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

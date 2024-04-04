@@ -1,4 +1,6 @@
-package org.example;
+package org.bcb.app;
+
+import org.bcb.model.BloodParameter;
 
 import java.util.*;
 
@@ -91,7 +93,9 @@ public class Analyzer {
         if (isWrittenToFile) {
             IO_SYSTEM.writeTestToRecord(outputTable);
         }
+        IOSystem.printSeparator();
         System.out.println(outputTable);
+        IOSystem.printSeparator();
     }
 
     //---------------------------
