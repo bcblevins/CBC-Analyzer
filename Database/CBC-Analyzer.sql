@@ -8,10 +8,12 @@ DROP TABLE IF EXISTS tag;
 
 CREATE TABLE "patient" (
   "patient_id" serial PRIMARY KEY,
+  "chart_number" varchar(6) unique,
   "name" varchar(50) NOT NULL,
   "sex" varchar(2) NOT NULL CHECK ("sex" IN ('F', 'M', 'SF', 'CM')),
   "species" varchar(20) NOT NULL,
-  "birthday" date NOT NULL
+  "birthday" date NOT NULL,
+  "active" boolean default true
 );
 
 CREATE TABLE "test" (
@@ -69,11 +71,11 @@ ALTER TABLE "test_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
 
 -- Filling Tables
 
-INSERT INTO patient (name, sex, species, birthday) values 
-  ('Charlie Blevins', 'SF', 'Canine', '2013-03-14'),
-  ('Good Boy', 'CM', 'Canine', '2011-02-04'),
-  ('Killer Blevins', 'CM', 'Canine', '2012-07-02'),
-  ('Sick Girl', 'F', 'Canine', '2014-12-20');
+INSERT INTO patient (chart_number, name, sex, species, birthday) values
+  ('000000', 'Charlie Blevins', 'SF', 'Canine', '2013-03-14'),
+  ('10175', 'Good Boy', 'CM', 'Canine', '2011-02-04'),
+  ('115202', 'Killer Blevins', 'CM', 'Canine', '2012-07-02'),
+  ('115654',  'Sick Girl', 'F', 'Canine', '2014-12-20');
 
 
 INSERT INTO tag (name, is_diagnosis) values
@@ -99,7 +101,5 @@ INSERT INTO patient_tag (patient_id, tag_id) values
 	(1, 1),
 	(1, 4);
 	
-select tag.name 
-from patient
-join patient_tag on patient_tag.patient_id = patient.patient_id
-join tag on tag.tag_id = patient_tag.tag_id;
+select *
+from patient;

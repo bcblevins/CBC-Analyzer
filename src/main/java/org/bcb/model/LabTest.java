@@ -1,4 +1,5 @@
 package org.bcb.model;
 
-public class Test {
+public class LabTest {
+
 }

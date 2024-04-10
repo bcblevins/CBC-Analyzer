@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Patient {
-    private String id;
+    private int id;
+    private String chartNumber;
     private String name;
     private String sex;
     private String species;
@@ -15,12 +16,13 @@ public class Patient {
     private List<String> flags = new ArrayList<>();
     private String recordFilePath;
     private boolean isNullPatient;
+    private boolean isActive = true;
     public Patient (boolean isNullPatient) {
         this.isNullPatient = isNullPatient;
     }
 
-    public Patient(String id, String name, String sex, String species, LocalDate dateOfBirth, List<String> flags, String recordFilePath) {
-        this.id = id;
+    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> flags, String recordFilePath) {
+        this.chartNumber = chartNumber;
         this.name = name;
         this.sex = sex;
         this.species = species;
@@ -28,6 +30,14 @@ public class Patient {
         this.flags = flags;
         this.recordFilePath = recordFilePath;
         setAgeFlag();
+    }
+    public Patient(int id, String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
+        this.id = id;
+        this.chartNumber = chartNumber;
+        this.name = name;
+        this.sex = sex;
+        this.species = species;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getAgeFlag() {
@@ -47,8 +57,8 @@ public class Patient {
         }
     }
 
-    public String getId() {
-        return id;
+    public String getChartNumber() {
+        return chartNumber;
     }
 
     public String getName() {
@@ -77,5 +87,13 @@ public class Patient {
 
     public boolean isNullPatient() {
         return isNullPatient;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

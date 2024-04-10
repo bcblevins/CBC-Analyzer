@@ -1,6 +1,11 @@
 package org.bcb.app;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.bcb.dao.JdbcBloodParameterDao;
+import org.bcb.dao.JdbcPatientDao;
+import org.bcb.dao.JdbcLabTestDao;
 import org.bcb.model.Patient;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -23,13 +28,21 @@ public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static Analyzer analyzer = new Analyzer();
     public static Patient patient;
+    public static JdbcPatientDao jdbcPatientDao;
+    public static JdbcLabTestDao jdbcLabTestDao;
+    public static JdbcBloodParameterDao jdbcBloodParameterDao;
 
     public static void main(String[] args) {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/CBC-AnalyzerDB");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("postgres1");
+
         while (true) {
-            String patientID = iOSys.promptForInput("Please enter a patient chart number:");
+            String chartNumber = iOSys.promptForInput("Please enter a patient chart number:");
 
             //setup patient
-            patient = iOSys.selectPatientRecord(patientID);
+            patient = iOSys.selectPatientRecord(chartNumber);
             System.out.println("This patient has a record on file.");
             if (patient.isNullPatient()) {
                 return;
@@ -64,7 +77,7 @@ public class Main {
             String searchMethod = iOSys.displayMenu("::Selected filters:: " + "\n"
                     + filtersForDisplay + "\n"
                     + "\n"
-                    + "Please add at least one filter:", "Test type", "Date", "Flags", "Search using selected filters", "Go back to patient menu");
+                    + "Please add at least one filter:", "LabTest type", "Date", "Flags", "Search using selected filters", "Go back to patient menu");
             System.out.println();
 
             //tests
