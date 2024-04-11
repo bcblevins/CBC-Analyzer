@@ -3,6 +3,7 @@ package org.bcb.dao;
 import org.bcb.exception.DaoException;
 import org.bcb.model.Patient;
 import org.bcb.model.LabTest;
+import org.bcb.model.Tag;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,11 +18,42 @@ public class JdbcPatientDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     public Patient getPatientByChartNumber(String chartNumber) {
+        Patient patient = null;
         String sql = "SELECT * FROM patient WHERE chart_number = ?";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, chartNumber);
+            patient = mapToPatient(rowSet);
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return patient;
+    }
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, chartNumber);
-
-        return mapToPatient(rowSet);
+    public Patient getPatientById(int id) {
+        Patient patient = null;
+        String sql = "SELECT * FROM patient WHERE patient_id = ?";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
+            patient = mapToPatient(rowSet);
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return patient;
+    }
+    public Patient createPatient(Patient patient) {
+        Patient nPatient = null;
+        String sql = "INSERT INTO patient(chart_number, name, sex, species, birthday) values " +
+                "(?, ?, ?, ?, ?) " +
+                "returning patient_id;";
+        try {
+            int id = jdbcTemplate.queryForObject(sql, int.class, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth());
+            nPatient = getPatientById(id);
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
+        }
+        return nPatient;
     }
 
     public Patient updatePatient(Patient patient) {
@@ -64,14 +96,36 @@ public class JdbcPatientDao {
     }
 
 
-//TODO:
-//    public void linkTestToPatient(LabTest labTest, Patient patient) {
-//        String sql = "INSERT INTO patient_test(patient_id, test_id) VALUES " +
-//                "(?, ?);";
-//        try {
-//            jdbcTemplate.update(sql, patient.getId(), labTest.getTestId())
-//        }
-//    }
+    public void linkTestToPatient(Patient patient, LabTest labTest) {
+        int rowsAffected;
+        String sql = "INSERT INTO patient_test(patient_id, test_id) VALUES " +
+                "(?, ?);";
+        try {
+            rowsAffected = jdbcTemplate.update(sql, patient.getId(), labTest.getId());
+            if (rowsAffected == 0) {
+                throw new DaoException("Failed to link test to patient");
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
+        }
+    }
+    public void linkTagToPatient(Patient patient, Tag tag) {
+        int rowsAffected;
+        String sql = "INSERT INTO patient_test(patient_id, tag_id) values " +
+                "(?, ?);";
+        try {
+            rowsAffected = jdbcTemplate.update(sql, patient, tag);
+            if (rowsAffected == 0) {
+                throw new DaoException("Failed to link tag to patient");
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
+        }
+    }
 
     private Patient mapToPatient(SqlRowSet rowSet) {
         Patient patient = new Patient(
@@ -82,6 +136,6 @@ public class JdbcPatientDao {
                 rowSet.getString("species"),
                 rowSet.getDate("birthday").toLocalDate()
         );
-
+        return patient;
     }
 }

@@ -4,6 +4,7 @@ package org.bcb.model;
 public class BloodParameter {
 
     private int id;
+    private double result;
     private String name;
     private double rangeLow;
     private double rangeHigh;
@@ -12,6 +13,15 @@ public class BloodParameter {
     private String normalRangeForOutput;
     private boolean isOutsideNormalRange;
 
+
+    public BloodParameter(int id, double result, String name, double rangeLow, double rangeHigh, String unit) {
+        this.id = id;
+        this.result = result;
+        this.name = name;
+        this.rangeLow = rangeLow;
+        this.rangeHigh = rangeHigh;
+        this.unit = unit;
+    }
 
     public BloodParameter(String name, double rangeLow, double rangeHigh, String unit) {
         this.name = name;
@@ -40,6 +50,10 @@ public class BloodParameter {
 
     public int getId() {
         return id;
+    }
+
+    public double getResult() {
+        return result;
     }
 
     public String getAnalyzedBloodValue() {
