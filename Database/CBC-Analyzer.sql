@@ -101,5 +101,14 @@ INSERT INTO patient_tag (patient_id, tag_id) values
 	(1, 1),
 	(1, 4);
 	
-select *
-from patient;
+INSERT INTO test (patient_id, time_stamp) values 
+	(1, '2024-03-14');
+	
+INSERT INTO result (test_id, parameter_id, result_value) values 
+	(1, 1, 9.3),
+	(1, 2, 8.0),
+	(1, 3, 20.3),
+	(1, 4, 54.0),
+	(1, 5, 67.0),
+	(1, 6, 330.0);
+	
