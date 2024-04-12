@@ -47,7 +47,7 @@ public class JdbcLabTestDao {
             String sql = "INSERT INTO result (test_id, parameter_id, result_value ) VALUES " +
                     "(?, ?, ?);";
             String sqlSubQuery = "SELECT parameter_id from parameter where name = ?";
-            Main.jdbcBloodParameterDao.
+            Main.jdbcBloodParameterDao.getBloodParameterByName(bloodParameter.getName());
             try {
                 int rowsAffected = jdbcTemplate.update(sql, labTest.getId(), bloodParameter.ge)
             }
