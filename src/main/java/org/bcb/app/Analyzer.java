@@ -1,11 +1,13 @@
 package org.bcb.app;
 
 import org.bcb.model.BloodParameter;
+import org.bcb.model.Patient;
 
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 
+//TODO: Get blood parameters from DB so that they have IDs
 public class Analyzer {
     private final IOSystem IO_SYSTEM = new IOSystem();
     //BloodParameters are used to evaluate blood values based on reference ranges, as well as store analyzed values
@@ -50,18 +52,18 @@ public class Analyzer {
 
         return bloodMap;
     }
-    public void analyzeNewValues() {
+    public void analyzeNewValues(Patient patient) {
         String choice = IO_SYSTEM.displayMenu("Would you like to:", "Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)", "Go back to patient menu");
         Map<String, Double> bloodInputMap = new HashMap<>();
         String flags = "";
 
         //TODO: MAKE THIS FALSE AFTER TESTING
-        boolean isWrittenToFile = true;
+        boolean isWrittenToDb = true;
 
         if (choice.equals("1")) {
             bloodInputMap = IO_SYSTEM.takeBloodValues();
 //            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
-            isWrittenToFile = true;
+            isWrittenToDb = true;
         } else if (choice.equals("2")) {
             //TODO: REMOVE THIS LINE
 //            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
@@ -93,8 +95,8 @@ public class Analyzer {
         }};
 
         String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags);
-        if (isWrittenToFile) {
-            Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp)
+        if (isWrittenToDb) {
+            Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp, patient);
             IO_SYSTEM.writeTestToRecord(outputTable);
         }
         IOSystem.printSeparator();

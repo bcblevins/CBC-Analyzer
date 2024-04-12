@@ -1,6 +1,7 @@
 package org.bcb.dao;
 
 import org.bcb.exception.DaoException;
+import org.bcb.model.LabTest;
 import org.bcb.model.Tag;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,7 +45,22 @@ public class JdbcTagDao {
         }
         return results;
     }
-
+    public List<Tag> getTagsForTest(LabTest test) {
+        List<Tag> tags = new ArrayList<>();
+        String sql = "SELECT tag.tag_id, tag.name, tag.isDiagnosis " +
+                "FROM tag " +
+                "JOIN test_tag ON test_tag.tag_id = tag.tag_id " +
+                "WHERE test_tag.test_id = ?;";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, test.getId());
+            while (rowSet.next()) {
+                tags.add(mapToTag(rowSet));
+            }
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return tags;
+    }
 
     public Tag mapToTag(SqlRowSet rowSet) {
         Tag tag = new Tag(

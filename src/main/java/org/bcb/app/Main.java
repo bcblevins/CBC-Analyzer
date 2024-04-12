@@ -4,6 +4,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.bcb.dao.JdbcBloodParameterDao;
 import org.bcb.dao.JdbcPatientDao;
 import org.bcb.dao.JdbcLabTestDao;
+import org.bcb.dao.JdbcTagDao;
 import org.bcb.model.Patient;
 
 
@@ -32,6 +33,7 @@ public class Main {
     public static JdbcPatientDao jdbcPatientDao;
     public static JdbcLabTestDao jdbcLabTestDao;
     public static JdbcBloodParameterDao jdbcBloodParameterDao;
+    public static JdbcTagDao jdbcTagDao;
 
     public static void main(String[] args) {
         dataSource = new BasicDataSource();
@@ -42,6 +44,7 @@ public class Main {
         jdbcPatientDao = new JdbcPatientDao(dataSource);
         jdbcBloodParameterDao = new JdbcBloodParameterDao(dataSource);
         jdbcLabTestDao = new JdbcLabTestDao(dataSource);
+        jdbcTagDao = new JdbcTagDao(dataSource);
 
         while (true) {
             String chartNumber = iOSys.promptForInput("Please enter a patient chart number:");
@@ -62,7 +65,7 @@ public class Main {
                 System.out.println("Flags:   |" + patient.getFlags());
                 String choice = iOSys.displayMenu("Would you like to ", "Analyze blood values", "Search old tests", "Work with a different patient", "Quit");
                 if (choice.equals("1")) {
-                    analyzer.analyzeNewValues();
+                    analyzer.analyzeNewValues(patient);
                 } else if (choice.equals("2")) {
                     searchMain();
                 } else if (choice.equals("3")) {
@@ -119,7 +122,7 @@ public class Main {
             //do the search!
             } else if (searchMethod.equals("4")){
                 if (!filters.isEmpty()) {
-                    System.out.println(iOSys.searchLog(filters));
+                    iOSys.searchForTests(filters, patient);
                     iOSys.waitForUser();
                     return;
                 } else {

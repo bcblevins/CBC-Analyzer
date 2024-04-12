@@ -2,7 +2,9 @@ package org.bcb.app;
 
 import org.bcb.dao.JdbcPatientDao;
 import org.bcb.model.BloodParameter;
+import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
+import org.bcb.model.Tag;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -133,33 +135,48 @@ public class IOSystem {
     }
 
 
-
-    public String searchLog(String filters){
+    //TODO: Change to db search
+    public void searchForTests(String filters, Patient patient){
         List<String> typeFilters = new ArrayList<>();
-        List<String> dateFilters = new ArrayList<>();
+        List<LocalDate> dateFilters = new ArrayList<>();
         List<String> flagFilters = new ArrayList<>();
         String[] filtersArray = filters.split(",");
+        List<LabTest> matchingTests = new ArrayList<>();
 
         //add filters to their respective lists, remove filter identifier (first character)
         for (String filter : filtersArray) {
             if (filter.substring(0,1).equals("t")) {
                 typeFilters.add(filter.substring(1));
             } else if (filter.substring(0,1).equals("d")) {
-                dateFilters.add(filter.substring(1));
+                try {
+                    dateFilters.add(LocalDate.parse(filter.substring(1)));
+                } catch (DateTimeParseException e) {
+                    System.out.println("Failed to parse search date");
+                }
             } else if (filter.substring(0,1).equals("f")) {
                 flagFilters.add(filter.substring(1));
             }
         }
 
-        //TODO: DELETE
-        //String searchTerm = input.nextLine();
+        if (!dateFilters.isEmpty()) {
+            for (LocalDate dateFilter : dateFilters) {
+                matchingTests.addAll(jdbcLabTestDao.getLabTestByDate(dateFilter, patient));
+            }
+        }
+        // Only support CBC for now, add all tests for patient
+        if (!typeFilters.isEmpty()) {
+            matchingTests.addAll(jdbcLabTestDao.getLabTestsByPatient(patient));
+        }
+        if (!flagFilters.isEmpty()) {
+            matchingTests.addAll(jdbcLabTestDao.getLabTestsByTags(flagFilters, true));
+        }
 
+
+        //Deprecated functionality
+        /*
         File patientFile = new File(patient.getRecordFilePath());
 
-
         StringBuilder matchingLogEntries = new StringBuilder();
-
-        //understand rest of method, leave comments where things wont work
 
         try (Scanner dataInput = new Scanner(patientFile)){
             //These are used to start and stop adding lines to the output string.
@@ -237,14 +254,26 @@ public class IOSystem {
             System.out.println("Log file not found.");
         }
 
-        if (matchingLogEntries.isEmpty()) {
-            return "No log entries matching selected filters.";
+        */
+
+        if (matchingTests.isEmpty()) {
+            System.out.println("No log entries matching selected filters.");
         } else {
-            return matchingLogEntries.toString();
+            displayTests(matchingTests);
         }
     }
 
+    //TODO: Create display function for lab tests, maybe use the analyzer method?
+    public void displayTests(List<LabTest> tests) {
 
+        for (LabTest test : tests) {
+            StringBuilder tags = new StringBuilder();
+            for (Tag tag : jdbcTagDao.getTagsForTest(test)) {
+                tags.append(tag.getName()).append(",");
+            }
+            System.out.println(createTable(new ArrayList<BloodParameter>(test.getResults().values()), "CBC", tags.toString()));
+        }
+    }
 
     public Patient selectPatientRecord(String chartId){
         Patient patient = jdbcPatientDao.getPatientByChartNumber(chartId);

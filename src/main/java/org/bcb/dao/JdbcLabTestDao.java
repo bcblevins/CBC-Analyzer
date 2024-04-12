@@ -4,11 +4,14 @@ import org.bcb.app.Main;
 import org.bcb.exception.DaoException;
 import org.bcb.model.BloodParameter;
 import org.bcb.model.LabTest;
+import org.bcb.model.Patient;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,21 +38,88 @@ public class JdbcLabTestDao {
         }
         return test;
     }
+    public List<LabTest> getLabTestByDate(LocalDate date, Patient patient) {
+        List<LabTest> tests = new ArrayList<>();
+        String sql = "SELECT * FROM test " +
+                "WHERE DATE(time_stamp) = ? AND patient_id = ?;";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, date, patient.getId());
+            while (rowSet.next()) {
+                tests.add(mapToLabTest(rowSet));
+            }
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return tests;
+    }
+    public List<LabTest> getLabTestsByPatient(Patient patient) {
+        List<LabTest> tests = new ArrayList<>();
+        String sql = "SELECT * FROM test " +
+                "WHERE patient_id = ?;";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, patient.getId());
+            while (rowSet.next()) {
+                tests.add(mapToLabTest(rowSet));
+            }
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return tests;
+    }
+    public List<LabTest> getLabTestsByTags(List<String> tags, boolean wildCard) {
+        List<LabTest> tests = new ArrayList<>();
+        String sql = "SELECT * " +
+                "FROM test " +
+                "JOIN test_tag ON test_tag.test_id = test.test_id " +
+                "JOIN tag ON tag.tag_id = test_tag.tag_id" +
+                "WHERE tag ILIKE ?;";
+        try {
+            for (String tag : tags) {
+                if (wildCard) {
+                    tag = "%" + tag + "%";
+                }
+                SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, tag);
+                while (rowSet.next()) {
+                    tests.add(mapToLabTest(rowSet));
+                }
+            }
 
-    public LabTest createTest(List<BloodParameter> bloodParameterList, LocalDateTime timeStamp) {
-        LabTest labTest = null;
+        }  catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return tests;
+    }
+
+    public LabTest createTest(List<BloodParameter> bloodParameterList, LocalDateTime timeStamp, Patient patient) {
+        LabTest newTest = null;
         String sql = "INSERT INTO test (patient_id, time_stamp) values " +
-                "(?, ?)";
+                "(?, ?) " +
+                "RETURNING test_id;";
+        try {
+            int id = jdbcTemplate.queryForObject(sql, int.class, patient.getId(), timeStamp);
+            newTest = getLabTestById(id);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
+        }
+        linkTestToResults(bloodParameterList, newTest);
+        return newTest;
     }
 
     private void linkTestToResults(List<BloodParameter> bloodParameterList, LabTest labTest) {
         for (BloodParameter bloodParameter : bloodParameterList) {
-            String sql = "INSERT INTO result (test_id, parameter_id, result_value ) VALUES " +
+            String sql = "INSERT INTO result (test_id, parameter_id, result_value) VALUES " +
                     "(?, ?, ?);";
-            String sqlSubQuery = "SELECT parameter_id from parameter where name = ?";
-            Main.jdbcBloodParameterDao.getBloodParameterByName(bloodParameter.getName());
             try {
-                int rowsAffected = jdbcTemplate.update(sql, labTest.getId(), bloodParameter.ge)
+                int rowsAffected = jdbcTemplate.update(sql, labTest.getId(), bloodParameter.getId(), bloodParameter.getResult());
+                if (rowsAffected == 0) {
+                    throw new DaoException("Failed to link test to result");
+                }
+            } catch (CannotGetJdbcConnectionException e) {
+                throw new DaoException("Could not connect to database");
+            } catch (DataIntegrityViolationException e) {
+                throw new DaoException("Data integrity violation");
             }
         }
     }
