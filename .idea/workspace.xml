@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b57b9b50-e517-4bd5-aee9-2373f02c6272" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/Analyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/Analyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcBloodParameterDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcBloodParameterDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcPatientDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcPatientDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcTagDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcTagDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,5 +103,15 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/.." />
     </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.springframework.jdbc.InvalidResultSetAccessException" package="org.springframework.jdbc" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

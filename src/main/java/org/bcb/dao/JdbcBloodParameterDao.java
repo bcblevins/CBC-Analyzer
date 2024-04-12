@@ -2,15 +2,12 @@ package org.bcb.dao;
 
 import org.bcb.exception.DaoException;
 import org.bcb.model.BloodParameter;
-import org.bcb.model.LabTest;
-import org.bcb.model.Patient;
+
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class JdbcBloodParameterDao {
     private final JdbcTemplate jdbcTemplate;
@@ -25,7 +22,9 @@ public class JdbcBloodParameterDao {
         String sql = "SELECT * FROM parameter WHERE parameter_id = ?";
         try {
             rowSet = jdbcTemplate.queryForRowSet(sql, id);
-            bloodParameter = mapToBloodParameter(rowSet);
+            if (rowSet.next()) {
+                bloodParameter = mapToBloodParameter(rowSet);
+            }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
@@ -38,7 +37,9 @@ public class JdbcBloodParameterDao {
         String sql = "SELECT * FROM parameter WHERE name ilike ?";
         try {
             rowSet = jdbcTemplate.queryForRowSet(sql, name);
-            bloodParameter = mapToBloodParameter(rowSet);
+            if (rowSet.next()) {
+                bloodParameter = mapToBloodParameter(rowSet);
+            }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }

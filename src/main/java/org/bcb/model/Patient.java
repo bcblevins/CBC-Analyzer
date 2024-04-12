@@ -49,8 +49,8 @@ public class Patient {
         this.species = species;
         this.dateOfBirth = dateOfBirth;
     }
+
     public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
-        this.id = id;
         this.chartNumber = chartNumber;
         this.name = name;
         this.sex = sex;

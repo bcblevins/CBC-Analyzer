@@ -25,7 +25,7 @@ public class IOSystem {
     static final String PATIENT_INFO_SEPARATOR = ";;";
     public final int SEARCH_BY_NAME = 1;
     public final int SEARCH_BY_DATE = 2;
-    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
+//    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
     private final Scanner input = new Scanner(System.in);
 
     //------------------

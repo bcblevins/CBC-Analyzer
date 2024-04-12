@@ -22,7 +22,9 @@ public class JdbcPatientDao {
         String sql = "SELECT * FROM patient WHERE chart_number = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, chartNumber);
-            patient = mapToPatient(rowSet);
+            if (rowSet.next()) {
+                patient = mapToPatient(rowSet);
+            }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
@@ -34,7 +36,9 @@ public class JdbcPatientDao {
         String sql = "SELECT * FROM patient WHERE patient_id = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
-            patient = mapToPatient(rowSet);
+            if (rowSet.next()) {
+                patient = mapToPatient(rowSet);
+            }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }

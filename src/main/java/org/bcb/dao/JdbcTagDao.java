@@ -23,7 +23,9 @@ public class JdbcTagDao {
         String sql = "SELECT * FROM tag WHERE patient_id = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
-            tag = mapToTag(rowSet);
+            if (rowSet.next()) {
+                tag = mapToTag(rowSet);
+            }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }

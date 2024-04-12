@@ -32,7 +32,10 @@ public class JdbcLabTestDao {
                 "WHERE test.test_id = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
-            test = mapToLabTest(rowSet);
+            if (rowSet.next()) {
+                test = mapToLabTest(rowSet);
+            }
+
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
