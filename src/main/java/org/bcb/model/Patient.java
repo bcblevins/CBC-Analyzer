@@ -16,6 +16,16 @@ public class Patient {
     private List<String> flags = new ArrayList<>();
     private String recordFilePath;
     private boolean isNullPatient;
+    private boolean isPatientFound = true;
+
+    public void setPatientFound(boolean patientFound) {
+        isPatientFound = patientFound;
+    }
+
+    public boolean isPatientFound() {
+        return isPatientFound;
+    }
+
     private boolean isActive = true;
     public Patient (boolean isNullPatient) {
         this.isNullPatient = isNullPatient;
@@ -32,6 +42,14 @@ public class Patient {
         setAgeFlag();
     }
     public Patient(int id, String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
+        this.id = id;
+        this.chartNumber = chartNumber;
+        this.name = name;
+        this.sex = sex;
+        this.species = species;
+        this.dateOfBirth = dateOfBirth;
+    }
+    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
         this.id = id;
         this.chartNumber = chartNumber;
         this.name = name;

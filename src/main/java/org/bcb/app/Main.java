@@ -28,25 +28,30 @@ public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static Analyzer analyzer = new Analyzer();
     public static Patient patient;
+    public static BasicDataSource dataSource;
     public static JdbcPatientDao jdbcPatientDao;
     public static JdbcLabTestDao jdbcLabTestDao;
     public static JdbcBloodParameterDao jdbcBloodParameterDao;
 
     public static void main(String[] args) {
-        BasicDataSource dataSource = new BasicDataSource();
+        dataSource = new BasicDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:5432/CBC-AnalyzerDB");
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres1");
+
+        jdbcPatientDao = new JdbcPatientDao(dataSource);
+        jdbcBloodParameterDao = new JdbcBloodParameterDao(dataSource);
+        jdbcLabTestDao = new JdbcLabTestDao(dataSource);
 
         while (true) {
             String chartNumber = iOSys.promptForInput("Please enter a patient chart number:");
 
             //setup patient
             patient = iOSys.selectPatientRecord(chartNumber);
-            System.out.println("This patient has a record on file.");
             if (patient.isNullPatient()) {
                 return;
             }
+//            System.out.println("This patient has a record on file.");
 
 
             while (true) {

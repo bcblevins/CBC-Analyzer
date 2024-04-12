@@ -1,5 +1,6 @@
 package org.bcb.dao;
 
+import org.bcb.app.Main;
 import org.bcb.exception.DaoException;
 import org.bcb.model.BloodParameter;
 import org.bcb.model.LabTest;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,24 @@ public class JdbcLabTestDao {
             throw new DaoException("Could not connect to database");
         }
         return test;
+    }
+
+    public LabTest createTest(List<BloodParameter> bloodParameterList, LocalDateTime timeStamp) {
+        LabTest labTest = null;
+        String sql = "INSERT INTO test (patient_id, time_stamp) values " +
+                "(?, ?)";
+    }
+
+    private void linkTestToResults(List<BloodParameter> bloodParameterList, LabTest labTest) {
+        for (BloodParameter bloodParameter : bloodParameterList) {
+            String sql = "INSERT INTO result (test_id, parameter_id, result_value ) VALUES " +
+                    "(?, ?, ?);";
+            String sqlSubQuery = "SELECT parameter_id from parameter where name = ?";
+            Main.jdbcBloodParameterDao.
+            try {
+                int rowsAffected = jdbcTemplate.update(sql, labTest.getId(), bloodParameter.ge)
+            }
+        }
     }
 
     private LabTest mapToLabTest (SqlRowSet rowSet) {

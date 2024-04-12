@@ -1,5 +1,6 @@
 package org.bcb.app;
 
+import org.bcb.dao.JdbcPatientDao;
 import org.bcb.model.BloodParameter;
 import org.bcb.model.Patient;
 
@@ -22,12 +23,12 @@ public class IOSystem {
     static final String PATIENT_INFO_SEPARATOR = ";;";
     public final int SEARCH_BY_NAME = 1;
     public final int SEARCH_BY_DATE = 2;
-    private Scanner input = new Scanner(System.in);
+    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
+    private final Scanner input = new Scanner(System.in);
 
     //------------------
     // Class Methods
     //------------------
-
     public String displayMenu(String title, String... args) {
         //Display options
         System.out.println(SEPARATOR);
@@ -245,22 +246,26 @@ public class IOSystem {
 
 
 
-    public Patient selectPatientRecord(String patientID){
-        File patientFile = new File ("src/main/resources/patient-records/" + patientID + ".dat");
-        if (patientFile.exists()) {
-            return getPatientRecord(patientFile);
+    public Patient selectPatientRecord(String chartId){
+        Patient patient = jdbcPatientDao.getPatientByChartNumber(chartId);
+
+        if (patient.isPatientFound()) {
+            System.out.println("This patient has a record on file.");
+            waitForUser();
+            return patient;
         } else {
             System.out.println("No patient with that ID was found.");
             String choice = displayMenu("Would you like to:", "Set up a new patient record", "Quit");
             if (choice.equals("1")) {
-                return createPatientRecord(patientID, patientFile);
+                return createPatientRecord(chartId);
             } else {
                 return new Patient(true);
             }
         }
     }
-    private Patient createPatientRecord(String id, File patientFile) {
-        String name = promptForInput("Please enter the patient's name (Last, First)");
+
+    private Patient createPatientRecord(String chartId) {
+        String name = promptForInput("Please enter the patient's name (First Last)");
         String choice = displayMenu("Please enter the patient's sex:", "F", "M", "SF", "CM");
 
         String sex = switch (choice) {
@@ -272,9 +277,8 @@ public class IOSystem {
         };
         choice = displayMenu("Please enter the patient's species", "Canine");
         String species = "";
-        switch (choice) {
-            case "1":
-                species = "Canine";
+        if (choice.equals("1")) {
+            species = "Canine";
         }
 
         String dob = promptForInput("Please enter the patient's date of birth (YYYY-MM-DD):");
@@ -289,25 +293,10 @@ public class IOSystem {
             }
         }
 
-        String flagsRaw = promptForInput("Please enter any patient flags you would like to add to this patients record, separated by commas (flag1,flag2,flag3):");
-        List<String> flags = Arrays.asList(flagsRaw.split(","));
 
-        //create file
-        try (PrintWriter dataOutput = new PrintWriter(patientFile)){
-            dataOutput.println(id + "\n"
-                    + "-" + "\n"
-                    + name + "\n"
-                    + sex + "\n"
-                    + species + "\n"
-                    + dateOfBirth + "\n"
-                    + flagsRaw + "\n"
-                    + "-" + "\n"
-                    + PATIENT_INFO_SEPARATOR);
-        } catch (FileNotFoundException e) {
-            System.out.println("There was an error writing to patient file.");
-        }
 
-        return new Patient(id, name, sex, species, dateOfBirth, flags, patientFile.getPath());
+        Patient patient = new Patient(chartId, name, sex, species, dateOfBirth);
+        return jdbcPatientDao.createPatient(patient);
 
     }
     private Patient getPatientRecord(File patientFile) {

@@ -136,6 +136,9 @@ public class JdbcPatientDao {
                 rowSet.getString("species"),
                 rowSet.getDate("birthday").toLocalDate()
         );
+        if (rowSet.wasNull()) {
+            patient.setPatientFound(false);
+        }
         return patient;
     }
 }

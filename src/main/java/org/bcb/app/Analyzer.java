@@ -2,6 +2,8 @@ package org.bcb.app;
 
 import org.bcb.model.BloodParameter;
 
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 
 public class Analyzer {
@@ -53,20 +55,21 @@ public class Analyzer {
         Map<String, Double> bloodInputMap = new HashMap<>();
         String flags = "";
 
-        //TODO: MAKE THIS FALSE
+        //TODO: MAKE THIS FALSE AFTER TESTING
         boolean isWrittenToFile = true;
 
         if (choice.equals("1")) {
             bloodInputMap = IO_SYSTEM.takeBloodValues();
-            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
+//            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             isWrittenToFile = true;
         } else if (choice.equals("2")) {
             //TODO: REMOVE THIS LINE
-            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
+//            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             bloodInputMap = randomBloodValueGenerator();
         } else if (choice.equals("3")) {
             return;
         }
+        LocalDateTime timeStamp = LocalDateTime.now();
 
 
         //Loop through Map and call BloodParameter method analyzeParameter.
@@ -91,6 +94,7 @@ public class Analyzer {
 
         String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags);
         if (isWrittenToFile) {
+            Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp)
             IO_SYSTEM.writeTestToRecord(outputTable);
         }
         IOSystem.printSeparator();
