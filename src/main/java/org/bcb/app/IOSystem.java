@@ -278,17 +278,20 @@ public class IOSystem {
     public Patient selectPatientRecord(String chartId){
         Patient patient = jdbcPatientDao.getPatientByChartNumber(chartId);
 
-        if (patient.isPatientFound()) {
+        if (patient != null) {
             System.out.println("This patient has a record on file.");
             waitForUser();
             return patient;
         } else {
             System.out.println("No patient with that ID was found.");
-            String choice = displayMenu("Would you like to:", "Set up a new patient record", "Quit");
+            String choice = displayMenu("Would you like to:", "Set up a new patient record", "Choose another patient record", "Quit");
             if (choice.equals("1")) {
                 return createPatientRecord(chartId);
+            } else if (choice.equals("2")){
+                return patient;
             } else {
-                return new Patient(true);
+                patient = new Patient(true);
+                return patient;
             }
         }
     }

@@ -15,7 +15,7 @@ public class Patient {
     private String ageFlag;
     private List<String> flags = new ArrayList<>();
     private String recordFilePath;
-    private boolean isNullPatient;
+    private boolean isQuitPatient;
     private boolean isPatientFound = true;
 
     public void setPatientFound(boolean patientFound) {
@@ -27,8 +27,8 @@ public class Patient {
     }
 
     private boolean isActive = true;
-    public Patient (boolean isNullPatient) {
-        this.isNullPatient = isNullPatient;
+    public Patient (boolean isQuitPatient) {
+        this.isQuitPatient = isQuitPatient;
     }
 
     public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> flags, String recordFilePath) {
@@ -103,8 +103,12 @@ public class Patient {
         return recordFilePath;
     }
 
-    public boolean isNullPatient() {
-        return isNullPatient;
+    public boolean isQuitPatient() {
+        return isQuitPatient;
+    }
+
+    public void setQuitPatient(boolean quitPatient) {
+        isQuitPatient = quitPatient;
     }
 
     public int getId() {

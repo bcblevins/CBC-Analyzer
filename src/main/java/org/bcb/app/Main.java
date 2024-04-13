@@ -37,9 +37,9 @@ public class Main {
 
     public static void main(String[] args) {
         dataSource = new BasicDataSource();
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/CBC-AnalyzerDB");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres1");
+        dataSource.setUrl(System.getenv("URL"));
+        dataSource.setUsername(System.getenv("USERNAME"));
+        dataSource.setPassword(System.getenv("PASSWORD"));
 
         jdbcPatientDao = new JdbcPatientDao(dataSource);
         jdbcBloodParameterDao = new JdbcBloodParameterDao(dataSource);
@@ -50,8 +50,11 @@ public class Main {
             String chartNumber = iOSys.promptForInput("Please enter a patient chart number:");
 
             //setup patient
+
             patient = iOSys.selectPatientRecord(chartNumber);
-            if (patient.isNullPatient()) {
+            if (patient == null) {
+                continue;
+            } else if (patient.isQuitPatient()) {
                 return;
             }
 //            System.out.println("This patient has a record on file.");

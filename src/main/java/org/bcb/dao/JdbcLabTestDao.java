@@ -25,15 +25,12 @@ public class JdbcLabTestDao {
     }
     public LabTest getLabTestById(int id) {
         LabTest test = null;
-        String sql = "SELECT test.*, parameter.parameter_id, parameter.name, result.result_value, parameter.range_low, parameter.range_high, parameter.unit " +
-                "FROM test " +
-                "JOIN result ON result.test_id = test.test_id " +
-                "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
-                "WHERE test.test_id = ?";
+        String sql = "SELECT * FROM test WHERE test_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
+            //TODO: following line is false, why?
             if (rowSet.next()) {
-                test = mapToLabTest(rowSet);
+                test = mapToLabTestSimple(rowSet);
             }
 
         }  catch (CannotGetJdbcConnectionException e) {
@@ -99,7 +96,6 @@ public class JdbcLabTestDao {
         return tests;
     }
 
-    // TODO: Not writing results to DB
     public LabTest createTest(List<BloodParameter> bloodParameterList, LocalDateTime timeStamp, Patient patient) {
         LabTest newTest = null;
         String sql = "INSERT INTO test (patient_id, time_stamp) values " +
@@ -107,6 +103,7 @@ public class JdbcLabTestDao {
                 "RETURNING test_id;";
         try {
             int id = jdbcTemplate.queryForObject(sql, int.class, patient.getId(), timeStamp);
+
             newTest = getLabTestById(id);
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
@@ -117,7 +114,7 @@ public class JdbcLabTestDao {
         return newTest;
     }
 
-    //TODO: Somewhere here
+    //TODO: Not reaching here
     private void linkTestToResults(List<BloodParameter> bloodParameterList, LabTest labTest) {
         for (BloodParameter bloodParameter : bloodParameterList) {
             String sql = "INSERT INTO result (test_id, parameter_id, result_value) VALUES " +
@@ -135,6 +132,17 @@ public class JdbcLabTestDao {
         }
     }
 
+    private LabTest mapToLabTestSimple (SqlRowSet rowSet) {
+        LabTest labTest = new LabTest();
+
+        labTest.setId(rowSet.getInt("test_id"));
+        labTest.setPatientId(rowSet.getInt("patient_id"));
+        if (!rowSet.wasNull()) {
+            labTest.setTimeStamp(rowSet.getTimestamp("time_stamp").toLocalDateTime());
+        }
+
+        return labTest;
+    }
     private LabTest mapToLabTest (SqlRowSet rowSet) {
         LabTest labTest = new LabTest();
         boolean isFirstPass = true;

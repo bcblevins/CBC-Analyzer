@@ -10,13 +10,14 @@ import java.util.*;
 //TODO: Get blood parameters from DB so that they have IDs
 public class Analyzer {
     private final IOSystem IO_SYSTEM = new IOSystem();
+    //TODO: Make these not hard-coded
     //BloodParameters are used to evaluate blood values based on reference ranges, as well as store analyzed values
-    private final BloodParameter WBC = new BloodParameter("White Blood Cells", 4, 15.5, " 10^3/mcL");
-    private final BloodParameter RBC = new BloodParameter("Red Blood Cells", 4.8, 9.3, " 10^6/mcL");
-    private final BloodParameter HEMOGLOBIN = new BloodParameter("Hemoglobin", 12.1, 20.3, " g/dl");
-    private final BloodParameter HEMATOCRIT = new BloodParameter("Hematocrit", 36, 60, " %" );
-    private final BloodParameter MCV = new BloodParameter( "Mean Crepuscular Volume", 58, 79, " fL");
-    private final BloodParameter PLATELETS = new BloodParameter( "Platelets", 170, 400, " 10^3/mcL");
+    private final BloodParameter WBC = new BloodParameter(1, "White Blood Cells", 4, 15.5, " 10^3/mcL");
+    private final BloodParameter RBC = new BloodParameter(2, "Red Blood Cells", 4.8, 9.3, " 10^6/mcL");
+    private final BloodParameter HEMOGLOBIN = new BloodParameter(3, "Hemoglobin", 12.1, 20.3, " g/dl");
+    private final BloodParameter HEMATOCRIT = new BloodParameter(4, "Hematocrit", 36, 60, " %" );
+    private final BloodParameter MCV = new BloodParameter(5, "Mean Crepuscular Volume", 58, 79, " fL");
+    private final BloodParameter PLATELETS = new BloodParameter(6, "Platelets", 170, 400, " 10^3/mcL");
 
     //BloodParameter objects are put into Map so that they can be matched up to the Map of blood values to be analyzed
     private final Map<String, BloodParameter> BLOOD_PARAMETER_MAP = new HashMap<>() {{
@@ -97,7 +98,7 @@ public class Analyzer {
         String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags);
         if (isWrittenToDb) {
             Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp, patient);
-            IO_SYSTEM.writeTestToRecord(outputTable);
+            //IO_SYSTEM.writeTestToRecord(outputTable);
         }
         IOSystem.printSeparator();
         System.out.println(outputTable);

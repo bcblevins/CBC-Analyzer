@@ -25,7 +25,8 @@ public class BloodParameter {
         this.normalRangeForOutput = rangeLow + " - " + rangeHigh;
     }
 
-    public BloodParameter(String name, double rangeLow, double rangeHigh, String unit) {
+    public BloodParameter(int id, String name, double rangeLow, double rangeHigh, String unit) {
+        this.id = id;
         this.name = name;
         this.rangeLow = rangeLow;
         this.rangeHigh = rangeHigh;
