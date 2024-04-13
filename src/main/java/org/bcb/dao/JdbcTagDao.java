@@ -49,7 +49,7 @@ public class JdbcTagDao {
     }
     public List<Tag> getTagsForTest(LabTest test) {
         List<Tag> tags = new ArrayList<>();
-        String sql = "SELECT tag.tag_id, tag.name, tag.isDiagnosis " +
+        String sql = "SELECT tag.tag_id, tag.name, tag.is_diagnosis " +
                 "FROM tag " +
                 "JOIN test_tag ON test_tag.tag_id = tag.tag_id " +
                 "WHERE test_tag.test_id = ?;";

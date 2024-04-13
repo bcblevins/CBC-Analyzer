@@ -21,6 +21,8 @@ public class BloodParameter {
         this.rangeLow = rangeLow;
         this.rangeHigh = rangeHigh;
         this.unit = unit;
+        analyzeParameter(this.result);
+        this.normalRangeForOutput = rangeLow + " - " + rangeHigh;
     }
 
     public BloodParameter(String name, double rangeLow, double rangeHigh, String unit) {

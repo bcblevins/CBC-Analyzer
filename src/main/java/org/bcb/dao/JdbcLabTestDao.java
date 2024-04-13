@@ -43,7 +43,10 @@ public class JdbcLabTestDao {
     }
     public List<LabTest> getLabTestByDate(LocalDate date, Patient patient) {
         List<LabTest> tests = new ArrayList<>();
-        String sql = "SELECT * FROM test " +
+        String sql = "SELECT test.*, parameter.parameter_id, parameter.name, result.result_value, parameter.range_low, parameter.range_high, parameter.unit " +
+                "FROM test " +
+                "JOIN result ON result.test_id = test.test_id " +
+                "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
                 "WHERE DATE(time_stamp) = ? AND patient_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, date, patient.getId());
@@ -57,7 +60,10 @@ public class JdbcLabTestDao {
     }
     public List<LabTest> getLabTestsByPatient(Patient patient) {
         List<LabTest> tests = new ArrayList<>();
-        String sql = "SELECT * FROM test " +
+        String sql = "SELECT test.*, parameter.parameter_id, parameter.name, result.result_value, parameter.range_low, parameter.range_high, parameter.unit " +
+                "FROM test " +
+                "JOIN result ON result.test_id = test.test_id " +
+                "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
                 "WHERE patient_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, patient.getId());
@@ -71,10 +77,10 @@ public class JdbcLabTestDao {
     }
     public List<LabTest> getLabTestsByTags(List<String> tags, boolean wildCard) {
         List<LabTest> tests = new ArrayList<>();
-        String sql = "SELECT * " +
+        String sql = "SELECT test.*, parameter.parameter_id, parameter.name, result.result_value, parameter.range_low, parameter.range_high, parameter.unit " +
                 "FROM test " +
-                "JOIN test_tag ON test_tag.test_id = test.test_id " +
-                "JOIN tag ON tag.tag_id = test_tag.tag_id" +
+                "JOIN result ON result.test_id = test.test_id " +
+                "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
                 "WHERE tag ILIKE ?;";
         try {
             for (String tag : tags) {
@@ -93,6 +99,7 @@ public class JdbcLabTestDao {
         return tests;
     }
 
+    // TODO: Not writing results to DB
     public LabTest createTest(List<BloodParameter> bloodParameterList, LocalDateTime timeStamp, Patient patient) {
         LabTest newTest = null;
         String sql = "INSERT INTO test (patient_id, time_stamp) values " +
@@ -110,6 +117,7 @@ public class JdbcLabTestDao {
         return newTest;
     }
 
+    //TODO: Somewhere here
     private void linkTestToResults(List<BloodParameter> bloodParameterList, LabTest labTest) {
         for (BloodParameter bloodParameter : bloodParameterList) {
             String sql = "INSERT INTO result (test_id, parameter_id, result_value) VALUES " +
@@ -132,7 +140,9 @@ public class JdbcLabTestDao {
         boolean isFirstPass = true;
         Map<String, BloodParameter> results = new HashMap();
 
-        while (rowSet.next()) {
+        boolean isTimeToStop = false;
+
+        while (true) {
             if (isFirstPass) {
                 labTest.setId(rowSet.getInt("test_id"));
                 labTest.setPatientId(rowSet.getInt("patient_id"));
@@ -141,8 +151,9 @@ public class JdbcLabTestDao {
                 }
                 isFirstPass = false;
             }
+            int parameterId = rowSet.getInt("parameter_id");
             BloodParameter bloodParameter = new BloodParameter(
-                    rowSet.getInt("parameter_id"),
+                    parameterId,
                     rowSet.getBigDecimal("result_value").doubleValue(),
                     rowSet.getString("name"),
                     rowSet.getBigDecimal("range_low").doubleValue(),
@@ -150,7 +161,10 @@ public class JdbcLabTestDao {
                     rowSet.getString("unit")
             );
             results.put(bloodParameter.getName(), bloodParameter);
-
+            if (parameterId == 6) {
+                break;
+            }
+            rowSet.next();
         }
         labTest.setResults(results);
         return labTest;
