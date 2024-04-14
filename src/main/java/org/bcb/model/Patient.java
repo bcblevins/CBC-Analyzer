@@ -17,7 +17,7 @@ public class Patient {
     private String recordFilePath;
     private boolean isQuitPatient;
     private boolean isPatientFound = true;
-
+    private boolean isActive = true;
     public void setPatientFound(boolean patientFound) {
         isPatientFound = patientFound;
     }
@@ -26,7 +26,7 @@ public class Patient {
         return isPatientFound;
     }
 
-    private boolean isActive = true;
+
     public Patient (boolean isQuitPatient) {
         this.isQuitPatient = isQuitPatient;
     }
@@ -56,6 +56,15 @@ public class Patient {
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public Patient(int id, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive) {
+        this.id = id;
+        this.name = name;
+        this.sex = sex;
+        this.species = species;
+        this.dateOfBirth = dateOfBirth;
+        this.isActive = isActive;
     }
 
     public String getAgeFlag() {
@@ -117,5 +126,29 @@ public class Patient {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

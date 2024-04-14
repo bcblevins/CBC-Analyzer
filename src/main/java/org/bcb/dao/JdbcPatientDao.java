@@ -62,10 +62,10 @@ public class JdbcPatientDao {
 
     public Patient updatePatient(Patient patient) {
         Patient updated = null;
-        String sql = "UPDATE patient set chart_number = ?, name = ?, sex = ?, species = ?, birthday = ? " +
+        String sql = "UPDATE patient set chart_number = ?, name = ?, sex = ?, species = ?, birthday = ?, active = ?" +
                 "where patient_id = ?";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.getId());
+            int rowsAffected = jdbcTemplate.update(sql, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive(), patient.getId());
             if (rowsAffected == 0) {
                 throw new DaoException("No rows updated, expected at least 1.");
             } else {
@@ -80,12 +80,12 @@ public class JdbcPatientDao {
     }
 
     // Don't want to allow deletion of patients. Can be marked inactive instead.
-    public Patient deletePatient(Patient patient) {
+    public Patient changePatientActiveStatus(Patient patient) {
         Patient updated = null;
-        String sql = "UPDATE patient set active = false " +
+        String sql = "UPDATE patient set active = ? " +
                 "where patient_id = ?";
         try {
-            int rowsAffected = jdbcTemplate.update(sql, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.getId());
+            int rowsAffected = jdbcTemplate.update(sql, !patient.isActive(), patient.getId());
             if (rowsAffected == 0) {
                 throw new DaoException("No rows updated, expected at least 1.");
             } else {
@@ -97,6 +97,24 @@ public class JdbcPatientDao {
             throw new DaoException("Data integrity violation");
         }
         return updated;
+    }
+    public int[] deletePatient(Patient patient) {
+        int patientsAffected = 0;
+        int testsAffected = 0;
+        //All tables cascade delete except for test, so we can return how many tests were deleted.
+        String sqlP = "DELETE FROM patient WHERE patient_id = ?;";
+        String sqlT = "DELETE FROM test WHERE patient_id = ?;";
+
+        try {
+            patientsAffected = jdbcTemplate.update(sqlP, patient.getId());
+            testsAffected = jdbcTemplate.update(sqlT, patient.getId());
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Database connection error", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation error", e);
+        }
+
+        return new int[]{patientsAffected, testsAffected};
     }
 
 

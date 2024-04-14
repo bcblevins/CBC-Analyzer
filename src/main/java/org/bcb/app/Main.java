@@ -57,23 +57,20 @@ public class Main {
             } else if (patient.isQuitPatient()) {
                 return;
             }
-//            System.out.println("This patient has a record on file.");
 
 
             while (true) {
-                System.out.println("Name:    |" + patient.getName());
-                System.out.println("Species: |" + patient.getSpecies());
-                System.out.println("Sex:     |" + patient.getSex());
-                System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
-                System.out.println("Flags:   |" + patient.getFlags());
-                String choice = iOSys.displayMenu("Would you like to ", "Analyze blood values", "Search old tests", "Work with a different patient", "Quit");
+                iOSys.printPatientInfo(patient);
+                String choice = iOSys.displayMenu("Would you like to ", "Update patient info", "Analyze blood values", "Search old tests", "Work with a different patient", "Quit");
                 if (choice.equals("1")) {
-                    analyzer.analyzeNewValues(patient);
+                    updatePatientMain();
                 } else if (choice.equals("2")) {
-                    searchMain();
+                    analyzer.analyzeNewValues(patient);
                 } else if (choice.equals("3")) {
-                    break;
+                    searchMain();
                 } else if (choice.equals("4")) {
+                    break;
+                } else if (choice.equals("5")) {
                     return;
                 }
             }
@@ -81,7 +78,7 @@ public class Main {
     }
 
 
-    public static void searchMain(){
+    public static void searchMain() {
         String filters = "";
         String filtersForDisplay = "";
         while (true) {
@@ -102,7 +99,7 @@ public class Main {
                     filtersForDisplay += "CBC, ";
                 }
 
-            //dates
+                //dates
             } else if (searchMethod.equals("2")) {
                 String date = iOSys.promptForInput("Please enter the date you would like to filter for (YYYY-MM-DD):");
                 while (true) {
@@ -116,14 +113,14 @@ public class Main {
                 filters += "d" + date + ",";
                 filtersForDisplay += date + ", ";
 
-            //flags
+                //flags
             } else if (searchMethod.equals("3")) {
-                String filterToAdd =  iOSys.promptForInput("Please enter a flag to filter for:");
+                String filterToAdd = iOSys.promptForInput("Please enter a flag to filter for:");
                 filters += "f" + filterToAdd + ",";
                 filtersForDisplay += filterToAdd + ", ";
 
-            //do the search!
-            } else if (searchMethod.equals("4")){
+                //do the search!
+            } else if (searchMethod.equals("4")) {
                 if (!filters.isEmpty()) {
                     iOSys.searchForTests(filters, patient);
                     iOSys.waitForUser();
@@ -133,12 +130,87 @@ public class Main {
                     iOSys.waitForUser();
                 }
 
-            //return to main menu
+                //return to main menu
             } else if (searchMethod.equals("5")) {
                 return;
             }
         }
 
+    }
+    public static void updatePatientMain() {
+        boolean isMarkedForDelete = false;
+        boolean isReadyToCommit = false;
+        Patient updatedPatient = new Patient(patient.getId(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive());
+        while (!isReadyToCommit) {
+            System.out.println("::Original::------------");
+            iOSys.printPatientInfo(patient);
+            System.out.println("::Updated::-------------");
+            iOSys.printPatientInfo(updatedPatient);
+            String choice = iOSys.displayMenu("Would you like to ",
+                    "Update name",
+                    "Update sex",
+                    "Update birthday",
+                    patient.isActive() ? "Mark inactive" : "Mark active",
+                    "Commit changes",
+                    "Delete patient and associated tests");
+            if (choice.equals("1")) {
+                updatedPatient.setName(iOSys.promptForInput("Please enter new name (First Last): "));
+
+            } else if (choice.equals("2")) {
+                choice = iOSys.displayMenu("Please enter new sex:", "M", "F", "CM", "SF");
+                String sex = "";
+                if (choice.equals("1")) {
+                    sex = "M";
+                } else if (choice.equals("2")) {
+                    sex = "F";
+                } else if (choice.equals("3")) {
+                    sex = "CM";
+                } else if (choice.equals("4")) {
+                    sex = "SF";
+                }
+                updatedPatient.setSex(sex);
+
+            } else if (choice.equals("3")) {
+                LocalDate birthday;
+                String birthdayString = iOSys.promptForInput("Please enter new birthday (YYYY-MM-DD);");
+                while (true) {
+                    try {
+                        birthday = LocalDate.parse(birthdayString);
+                        break;
+                    } catch (DateTimeParseException e) {
+                        birthdayString = iOSys.promptForInput("Please enter a valid date (YYYY-MM-DD):");
+                    }
+                }
+                updatedPatient.setDateOfBirth(birthday);
+            } else if (choice.equals("4")) {
+                updatedPatient.setActive(!patient.isActive());
+            } else if (choice.equals("5")) {
+                isReadyToCommit = true;
+            } else if (choice.equals("6")) {
+                isMarkedForDelete = true;
+            }
+
+            if (isMarkedForDelete) {
+                choice = iOSys.displayMenu("Are you sure you want to delete patient and associated tests? This is irreversible. ", "Yes, delete this patient and all associated tests.", "Back");
+                if (choice.equals("1")) {
+                    int[] affected = jdbcPatientDao.deletePatient(patient);
+                    System.out.println(affected[0] + " patients and " + affected[1] + " tests deleted.");
+                    return;
+                } else {
+                    continue;
+                }
+            }
+            //END of loop
+        }
+        if (isReadyToCommit) {
+            patient.setName(updatedPatient.getName());
+            patient.setSex(updatedPatient.getSex());
+            patient.setDateOfBirth(updatedPatient.getDateOfBirth());
+            patient.setActive(updatedPatient.isActive());
+
+            patient = jdbcPatientDao.updatePatient(patient);
+
+        }
     }
 
 }
