@@ -85,7 +85,7 @@ public class JdbcPatientDao {
 
     public Patient updatePatient(Patient patient) {
         Patient updated = null;
-        String sql = "UPDATE patient set chart_number = ?, name = ?, sex = ?, species = ?, birthday = ?, active = ?" +
+        String sql = "UPDATE patient set chart_number = ?, name = ?, sex = ?, species = ?, birthday = ?, active = ? " +
                 "where patient_id = ?";
         try {
             int rowsAffected = jdbcTemplate.update(sql, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive(), patient.getId());

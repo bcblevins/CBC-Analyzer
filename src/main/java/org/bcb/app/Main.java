@@ -74,6 +74,9 @@ public class Main {
                         "Quit");
                 if (choice.equals("1")) {
                     updatePatientMain();
+                    if (patient == null) {
+                        break;
+                    }
                 } else if (choice.equals("2")) {
                     analyzer.analyzeNewValues(patient);
                 } else if (choice.equals("3")) {
@@ -145,6 +148,7 @@ public class Main {
                 if (choice.equals("1")) {
                     int[] affected = jdbcPatientDao.deletePatient(patient);
                     System.out.println(affected[0] + " patients and " + affected[1] + " tests deleted.");
+                    patient = null;
                     return;
                 } else {
                     continue;
