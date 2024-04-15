@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JdbcPatientDao {
     private final JdbcTemplate jdbcTemplate;
@@ -17,6 +19,7 @@ public class JdbcPatientDao {
     public JdbcPatientDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
+
     public Patient getPatientByChartNumber(String chartNumber) {
         Patient patient = null;
         String sql = "SELECT * FROM patient WHERE chart_number = ?";
@@ -25,7 +28,7 @@ public class JdbcPatientDao {
             if (rowSet.next()) {
                 patient = mapToPatient(rowSet);
             }
-        }  catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
         return patient;
@@ -39,11 +42,31 @@ public class JdbcPatientDao {
             if (rowSet.next()) {
                 patient = mapToPatient(rowSet);
             }
-        }  catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
         return patient;
     }
+
+    public List<Patient> getPatientsByName(String name, boolean wildCard) {
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT * FROM patient " +
+                "WHERE name ILIKE ?;";
+        try {
+            if (wildCard) {
+                name = "%" + name + "%";
+            }
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, name);
+            while (rowSet.next()) {
+                patients.add(mapToPatient(rowSet));
+            }
+
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return patients;
+    }
+
     public Patient createPatient(Patient patient) {
         Patient nPatient = null;
         String sql = "INSERT INTO patient(chart_number, name, sex, species, birthday) values " +
@@ -52,7 +75,7 @@ public class JdbcPatientDao {
         try {
             int id = jdbcTemplate.queryForObject(sql, int.class, patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth());
             nPatient = getPatientById(id);
-        }  catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         } catch (DataIntegrityViolationException e) {
             throw new DaoException("Data integrity violation");
@@ -115,6 +138,7 @@ public class JdbcPatientDao {
             throw new DaoException("Data integrity violation");
         }
     }
+
     public void linkTagToPatient(Patient patient, Tag tag) {
         int rowsAffected;
         String sql = "INSERT INTO patient_test(patient_id, tag_id) values " +

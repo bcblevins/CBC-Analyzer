@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
@@ -86,11 +88,20 @@ public class IOSystem {
 
         return bloodMap;
     }
-    public String createTable(List<BloodParameter> bloodParameterList, String name, String flags) {
+    public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
+        if (flags.isEmpty() && patient.getAgeFlag() == null) {
+            flags = "";
+        } else {
+            flags = patient.getAgeFlag() + "," + flags;
+        }
+        LocalDate date = timestamp.toLocalDate();
+
+        String timestampFormatted = date.toString() + " " + timestamp.getHour() + ":" + timestamp.getMinute() + ":" + timestamp.getSecond();
+
         StringBuilder outputTable =
-                new StringBuilder(name + "\n"
-                        + patient.getAgeFlag() + "," + flags + "\n" +
-                        "\n" +
+                new StringBuilder(name + "\n" +
+                        timestampFormatted + "\n" +
+                        flags + "\n" +
                         "Parameter                 |Result    |Normal Range   | Unit     |\n" +
                         "--------------------------|----------|---------------|----------|\n");
 
@@ -263,7 +274,6 @@ public class IOSystem {
         }
     }
 
-    //TODO: Create display function for lab tests, maybe use the analyzer method?
     public void displayTests(List<LabTest> tests) {
 
         for (LabTest test : tests) {
@@ -271,7 +281,7 @@ public class IOSystem {
             for (Tag tag : jdbcTagDao.getTagsForTest(test)) {
                 tags.append(tag.getName()).append(",");
             }
-            System.out.println(createTable(new ArrayList<BloodParameter>(test.getResults().values()), "CBC", tags.toString()));
+            System.out.println(createTable(new ArrayList<BloodParameter>(test.getResults().values()), "CBC", tags.toString(), test.getTimeStamp()));
         }
     }
 

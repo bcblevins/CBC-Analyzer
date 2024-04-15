@@ -10,19 +10,11 @@ import org.bcb.model.Patient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 /*
     TODO:
-     Analyze:
-        - Add units to cbc prompts
-     Main:
-     IOSystem:
-        - Make static
-     Search:
-        - Change to a search class
-        - Explain that search is (greedy? nonspecific)
-     Other:
-        - Create more data for testing (weight loss tag)
+     Patient: update
 
  */
 public class Main {
@@ -47,17 +39,29 @@ public class Main {
         jdbcTagDao = new JdbcTagDao(dataSource);
 
         while (true) {
-            String chartNumber = iOSys.promptForInput("Please enter a patient chart number:");
+            String chartNumber = iOSys.promptForInput("Please enter a patient chart number, or hit enter to search by name:");
 
-            //setup patient
-
-            patient = iOSys.selectPatientRecord(chartNumber);
-            if (patient == null) {
-                continue;
-            } else if (patient.isQuitPatient()) {
-                return;
+            if (chartNumber.isEmpty()) {
+                patient = searchPatientMain();
+                if (patient == null) {
+                    continue;
+                }
+            } else {
+                try {
+                    Integer.parseInt(chartNumber);
+                } catch (NumberFormatException e) {
+                    System.out.println("That is not a valid option. Please try again.");
+                    iOSys.waitForUser();
+                    continue;
+                }
+                patient = iOSys.selectPatientRecord(chartNumber);
+                if (patient == null) {
+                    continue;
+                } else if (patient.isQuitPatient()) {
+                    return;
+                }
             }
-//            System.out.println("This patient has a record on file.");
+            //setup patient
 
 
             while (true) {
@@ -66,11 +70,15 @@ public class Main {
                 System.out.println("Sex:     |" + patient.getSex());
                 System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
                 System.out.println("Flags:   |" + patient.getFlags());
-                String choice = iOSys.displayMenu("Would you like to ", "Analyze blood values", "Search old tests", "Work with a different patient", "Quit");
+                String choice = iOSys.displayMenu("Would you like to ",
+                        "Analyze blood values",
+                        "Search old tests",
+                        "Work with a different patient",
+                        "Quit");
                 if (choice.equals("1")) {
                     analyzer.analyzeNewValues(patient);
                 } else if (choice.equals("2")) {
-                    searchMain();
+                    searchTestMain();
                 } else if (choice.equals("3")) {
                     break;
                 } else if (choice.equals("4")) {
@@ -81,7 +89,7 @@ public class Main {
     }
 
 
-    public static void searchMain(){
+    public static void searchTestMain(){
         String filters = "";
         String filtersForDisplay = "";
         while (true) {
@@ -139,6 +147,34 @@ public class Main {
             }
         }
 
+    }
+
+    public static Patient searchPatientMain() {
+        Patient match = null;
+        String name = iOSys.promptForInput("Please enter all or part of the name you would like to search:");
+        List<Patient> matches = jdbcPatientDao.getPatientsByName(name, true);
+        int option = 0;
+        if (matches.isEmpty()) {
+            System.out.print("No matches.");
+            iOSys.waitForUser();
+            return match;
+        }
+        System.out.println("Matches:");
+        for (Patient patient : matches) {
+            System.out.println(option + ") " + patient.toString());
+            option++;
+        }
+        while (true) {
+            String choice = iOSys.promptForInput("Please select a patient above by number");
+            try {
+                match = matches.get(Integer.parseInt(choice));
+                return match;
+            } catch (NumberFormatException e) {
+                System.out.println("Please select a number option.");
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("That is not a valid option.");
+            }
+        }
     }
 
 }

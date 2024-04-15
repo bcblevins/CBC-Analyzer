@@ -10,6 +10,7 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcPatientDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcPatientDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/model/BloodParameter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/model/BloodParameter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" afterDir="false" />
     </list>
@@ -63,9 +64,9 @@
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application">
       <envs>
-        <env name="password" value="postgres1" />
-        <env name="url" value="jdbc:postgresql://localhost:5432/CBC-AnalyzerDB" />
-        <env name="username" value="postgres" />
+        <env name="PASSWORD" value="postgres1" />
+        <env name="URL" value="jdbc:postgresql://localhost:5432/CBC-AnalyzerDB" />
+        <env name="USERNAME" value="postgres" />
       </envs>
       <option name="MAIN_CLASS_NAME" value="org.bcb.app.Main" />
       <module name="CBC-Analyzer" />
@@ -122,18 +123,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java</url>
-          <line>261</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java</url>
-          <line>273</line>
+          <line>283</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="13" />
+          <url>file://$PROJECT_DIR$/src/main/java/org/bcb/app/Analyzer.java</url>
+          <line>99</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java</url>

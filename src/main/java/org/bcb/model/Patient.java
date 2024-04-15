@@ -74,6 +74,9 @@ public class Patient {
             this.ageFlag = "puppy";
         }
     }
+    public String toString() {
+        return chartNumber + " : " + name + " : " + species + " : " + sex + " : " + dateOfBirth.toString() + " : " + (isActive ? "Active" : "Inactive");
+    }
 
     public String getChartNumber() {
         return chartNumber;

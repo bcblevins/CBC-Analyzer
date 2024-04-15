@@ -78,7 +78,7 @@ public class JdbcLabTestDao {
                 "FROM test " +
                 "JOIN result ON result.test_id = test.test_id " +
                 "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
-                "WHERE tag ILIKE ?;";
+                "WHERE name ILIKE ?;";
         try {
             for (String tag : tags) {
                 if (wildCard) {

@@ -95,7 +95,7 @@ public class Analyzer {
             add(PLATELETS);
         }};
 
-        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags);
+        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags, timeStamp);
         if (isWrittenToDb) {
             Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp, patient);
             //IO_SYSTEM.writeTestToRecord(outputTable);
