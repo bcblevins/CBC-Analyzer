@@ -57,15 +57,15 @@ CREATE TABLE "test_tag" (
 
 ALTER TABLE "test" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
 
-ALTER TABLE "result" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id");
+ALTER TABLE "result" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id") ON DELETE CASCADE;
 
 ALTER TABLE "result" ADD FOREIGN KEY ("parameter_id") REFERENCES "parameter" ("parameter_id");
 
-ALTER TABLE "patient_tag" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
+ALTER TABLE "patient_tag" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id") ON DELETE CASCADE;
 
 ALTER TABLE "patient_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
 
-ALTER TABLE "test_tag" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id");
+ALTER TABLE "test_tag" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id") ON DELETE CASCADE;
 
 ALTER TABLE "test_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
 

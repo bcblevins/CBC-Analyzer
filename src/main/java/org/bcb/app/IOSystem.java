@@ -373,6 +373,14 @@ public class IOSystem {
     //----------------------
     //  Helper/Small Methods
     //----------------------
+    public void printPatientInfo(Patient patient) {
+        System.out.println(patient.isActive() ? "[ ACTIVE ]" : "[ INACTIVE ]");
+        System.out.println("Name:    |" + patient.getName());
+        System.out.println("Species: |" + patient.getSpecies());
+        System.out.println("Sex:     |" + patient.getSex());
+        System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
+        System.out.println("Flags:   |" + patient.getFlags());
+    }
     private String createCell(String value, int cellSize) {
         return String.format("%" + (-cellSize) + "s", value) + "|";
     }
