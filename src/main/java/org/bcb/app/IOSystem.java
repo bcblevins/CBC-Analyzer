@@ -373,6 +373,7 @@ public class IOSystem {
     //----------------------
     //  Helper/Small Methods
     //----------------------
+
     public void printPatientInfo(Patient patient) {
         System.out.println(patient.isActive() ? "[ ACTIVE ]" : "[ INACTIVE ]");
         System.out.println("Name:    |" + patient.getName());

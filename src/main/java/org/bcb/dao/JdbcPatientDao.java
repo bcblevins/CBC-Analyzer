@@ -102,7 +102,6 @@ public class JdbcPatientDao {
         return updated;
     }
 
-    // Don't want to allow deletion of patients. Can be marked inactive instead.
     public Patient changePatientActiveStatus(Patient patient) {
         Patient updated = null;
         String sql = "UPDATE patient set active = ? " +
