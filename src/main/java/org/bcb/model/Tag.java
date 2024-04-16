@@ -11,6 +11,11 @@ public class Tag {
         this.isDiagnosis = isDiagnosis;
     }
 
+    public Tag(String name, boolean isDiagnosis) {
+        this.name = name;
+        this.isDiagnosis = isDiagnosis;
+    }
+
     public int getId() {
         return id;
     }

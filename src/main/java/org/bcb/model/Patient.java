@@ -13,7 +13,7 @@ public class Patient {
     private String species;
     private LocalDate dateOfBirth;
     private String ageFlag;
-    private List<String> flags = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
     private String recordFilePath;
     private boolean isQuitPatient;
     private boolean isPatientFound = true;
@@ -31,13 +31,13 @@ public class Patient {
         this.isQuitPatient = isQuitPatient;
     }
 
-    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> flags, String recordFilePath) {
+    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> tags, String recordFilePath) {
         this.chartNumber = chartNumber;
         this.name = name;
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
-        this.flags = flags;
+        this.tags = tags;
         this.recordFilePath = recordFilePath;
         setAgeFlag();
     }
@@ -107,8 +107,8 @@ public class Patient {
         return dateOfBirth;
     }
 
-    public List<String> getFlags() {
-        return flags;
+    public List<String> getTags() {
+        return tags;
     }
 
     public String getRecordFilePath() {
@@ -154,4 +154,10 @@ public class Patient {
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
 }
+

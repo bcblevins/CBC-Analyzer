@@ -1,6 +1,5 @@
 package org.bcb.app;
 
-import org.bcb.dao.JdbcPatientDao;
 import org.bcb.model.BloodParameter;
 import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
@@ -12,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
@@ -293,7 +291,7 @@ public class IOSystem {
             waitForUser();
             return patient;
         } else {
-            System.out.println("No patient with that ID was found.");
+            System.out.println("No patient with that chart number was found.");
             String choice = displayMenu("Would you like to:", "Set up a new patient record", "Choose another patient record", "Quit");
             if (choice.equals("1")) {
                 return createPatientRecord(chartId);
@@ -335,10 +333,42 @@ public class IOSystem {
             }
         }
 
-
-
         Patient patient = new Patient(chartId, name, sex, species, dateOfBirth);
-        return jdbcPatientDao.createPatient(patient);
+        patient = jdbcPatientDao.createPatient(patient);
+
+        // String tagString = promptForInput("Please enter any tags you would like to attribute to this patient's record (tag1,tag2,tag3):");
+
+        // TODO TRYING TO ADD ISDIAGNOSIS THING
+        Map<String, Boolean> tagMap = new HashMap<>();
+        String addTags = displayMenu("Would you like to add tags for this patient?", "Yes", "No");
+        if (addTags.equals("1")) {
+            while (true) {
+                String tagToAdd = promptForInput("Please enter a tag to add:");
+                String yOrN = promptForInput("Is this a diagnosis? (y/n)").toLowerCase();
+                tagMap.put(tagToAdd, yOrN.equals("y"));
+                String keepGoing = promptForInput("Would you like to add more tags? (y/n)");
+                if (keepGoing.equals("n")) {
+                    break;
+                }
+            }
+        }
+
+
+
+        //if (!tagString.isEmpty()) {
+            //List<String> tags = List.of(tagString.split(","));
+            patient.setTags(new ArrayList<String>(tagMap.keySet()));
+            for (Map.Entry<String, Boolean> tag : tagMap.entrySet()) {
+                Tag match = jdbcTagDao.searchForSingleTagByName(tag.getKey().toLowerCase());
+                if (match == null) {
+                    match = new Tag(tag.getKey(), tag.getValue());
+                    match = jdbcTagDao.createTag(match);
+                }
+                jdbcPatientDao.linkTagToPatient(patient, match);
+            }
+        //}
+
+        return patient;
 
     }
     private Patient getPatientRecord(File patientFile) {
@@ -380,7 +410,7 @@ public class IOSystem {
         System.out.println("Species: |" + patient.getSpecies());
         System.out.println("Sex:     |" + patient.getSex());
         System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
-        System.out.println("Flags:   |" + patient.getFlags());
+        System.out.println("Flags:   |" + patient.getTags());
     }
     private String createCell(String value, int cellSize) {
         return String.format("%" + (-cellSize) + "s", value) + "|";

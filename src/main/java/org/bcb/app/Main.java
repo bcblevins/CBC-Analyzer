@@ -11,10 +11,11 @@ import org.bcb.model.Patient;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.jar.JarOutputStream;
 
 /*
     TODO:
-     Patient: update
+     Patient not showing tags at startup
 
  */
 public class Main {
@@ -233,6 +234,7 @@ public class Main {
         int option = 0;
         if (matches.isEmpty()) {
             System.out.print("No matches.");
+            System.out.println();
             iOSys.waitForUser();
             return match;
         }

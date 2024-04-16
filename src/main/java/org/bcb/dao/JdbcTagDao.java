@@ -3,6 +3,7 @@ package org.bcb.dao;
 import org.bcb.exception.DaoException;
 import org.bcb.model.LabTest;
 import org.bcb.model.Tag;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -20,17 +21,32 @@ public class JdbcTagDao {
 
     public Tag getTagById(int id) {
         Tag tag = null;
-        String sql = "SELECT * FROM tag WHERE patient_id = ?";
+        String sql = "SELECT * FROM tag WHERE tag_id = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
             if (rowSet.next()) {
                 tag = mapToTag(rowSet);
             }
-        }  catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
         return tag;
     }
+
+    public Tag searchForSingleTagByName(String tagName) {
+        Tag result = null;
+        String sql = "SELECT * FROM tag WHERE name = ?";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, tagName);
+            if (rowSet.next()) {
+                result = mapToTag(rowSet);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return result;
+    }
+
     public List<Tag> searchForTagByName(String tagName, boolean isStrict) {
         List<Tag> results = new ArrayList<>();
         String sql = "SELECT * FROM tag WHERE name ILIKE ?";
@@ -47,6 +63,7 @@ public class JdbcTagDao {
         }
         return results;
     }
+
     public List<Tag> getTagsForTest(LabTest test) {
         List<Tag> tags = new ArrayList<>();
         String sql = "SELECT tag.tag_id, tag.name, tag.is_diagnosis " +
@@ -58,17 +75,33 @@ public class JdbcTagDao {
             while (rowSet.next()) {
                 tags.add(mapToTag(rowSet));
             }
-        }  catch (CannotGetJdbcConnectionException e) {
+        } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
         return tags;
+    }
+
+    public Tag createTag(Tag tag) {
+        Tag nTag = null;
+        String sql = "INSERT INTO tag (name, is_diagnosis) VALUES (?, ?) " +
+                "RETURNING tag_id;";
+        try {
+            int id = jdbcTemplate.queryForObject(sql, int.class, tag.getName(), tag.isDiagnosis());
+            nTag = getTagById(id);
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
+        }
+        return nTag;
+
     }
 
     public Tag mapToTag(SqlRowSet rowSet) {
         Tag tag = new Tag(
                 rowSet.getInt("tag_id"),
                 rowSet.getString("name"),
-                rowSet.getBoolean("isDiagnosis")
+                rowSet.getBoolean("is_diagnosis")
         );
         return tag;
     }

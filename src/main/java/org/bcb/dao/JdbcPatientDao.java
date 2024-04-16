@@ -158,10 +158,10 @@ public class JdbcPatientDao {
 
     public void linkTagToPatient(Patient patient, Tag tag) {
         int rowsAffected;
-        String sql = "INSERT INTO patient_test(patient_id, tag_id) values " +
+        String sql = "INSERT INTO patient_tag (patient_id, tag_id) values " +
                 "(?, ?);";
         try {
-            rowsAffected = jdbcTemplate.update(sql, patient, tag);
+            rowsAffected = jdbcTemplate.update(sql, patient.getId(), tag.getId());
             if (rowsAffected == 0) {
                 throw new DaoException("Failed to link tag to patient");
             }

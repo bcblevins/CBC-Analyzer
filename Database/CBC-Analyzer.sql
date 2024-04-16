@@ -39,7 +39,7 @@ CREATE TABLE "parameter" (
 
 CREATE TABLE "tag" (
   "tag_id" serial PRIMARY KEY,
-  "name" varchar(50) NOT NULL,
+  "name" varchar(50) NOT NULL UNIQUE,
   "is_diagnosis" boolean DEFAULT false
 );
 
@@ -83,11 +83,11 @@ INSERT INTO tag (name, is_diagnosis) values
 	('hypothyroidism', true),
 	('proteinuria', true),
 	('friendly', false),
-	('periodontal_disease', true),
-	('skin_mass', true),
+	('periodontal disease', true),
+	('skin mass', true),
 	('hyporexia', true),
 	('arthritis', true),
-	('weight_loss', true);
+	('weight loss', true);
 	
 INSERT INTO parameter (name, range_low, range_high, unit) values
 	('White Blood Cells', 4, 15.5, '10^3/mcL'),
