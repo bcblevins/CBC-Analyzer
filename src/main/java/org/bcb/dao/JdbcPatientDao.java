@@ -171,6 +171,18 @@ public class JdbcPatientDao {
             throw new DaoException("Data integrity violation");
         }
     }
+    public void unlinkTagFromPatient(Patient patient, Tag tag) {
+        int rowsAffected = 0;
+        //All tables cascade delete except for test, so we can return how many tests were deleted.
+        String sqlP = "DELETE FROM patient_tag WHERE patient_id = ? AND tag_id = ?;";
+        try {
+            rowsAffected = jdbcTemplate.update(sqlP, patient.getId(), tag.getId());
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Database connection error", e);
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation error", e);
+        }
+    }
 
     private Patient mapToPatient(SqlRowSet rowSet) {
         Patient patient = new Patient(

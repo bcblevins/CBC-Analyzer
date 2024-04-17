@@ -6,16 +6,19 @@ import org.bcb.dao.JdbcPatientDao;
 import org.bcb.dao.JdbcLabTestDao;
 import org.bcb.dao.JdbcTagDao;
 import org.bcb.model.Patient;
+import org.bcb.model.Tag;
 
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarOutputStream;
 
 /*
     TODO:
-     Patient not showing tags at startup
+     Delete tags not deleting tags, displaying objects instead of names.
 
  */
 public class Main {
@@ -39,19 +42,25 @@ public class Main {
         jdbcLabTestDao = new JdbcLabTestDao(dataSource);
         jdbcTagDao = new JdbcTagDao(dataSource);
 
+        //----------------------
+        //SELECT PATIENT
+        //----------------------
         while (true) {
             String chartNumber = iOSys.promptForInput("Please enter a patient chart number, or hit enter to search by name:");
 
+            // SEARCH BY NAME
             if (chartNumber.isEmpty()) {
                 patient = searchPatientMain();
                 if (patient == null) {
                     continue;
                 }
+
+                // PATIENT CHART NUMBER
             } else {
                 try {
                     Integer.parseInt(chartNumber);
                 } catch (NumberFormatException e) {
-                    System.out.println("That is not a valid option. Please try again.");
+                    System.out.println("That is not a valid chart number. Please try again.");
                     iOSys.waitForUser();
                     continue;
                 }
@@ -62,9 +71,10 @@ public class Main {
                     return;
                 }
             }
-            //setup patient
 
-
+            //----------------------
+            //CHOOSE WHAT TO DO
+            //----------------------
             while (true) {
                 iOSys.printPatientInfo(patient);
                 String choice = iOSys.displayMenu("Would you like to ",
@@ -73,17 +83,27 @@ public class Main {
                         "Search old tests",
                         "Work with a different patient",
                         "Quit");
+
+                //UPDATE PATIENT
                 if (choice.equals("1")) {
                     updatePatientMain();
                     if (patient == null) {
                         break;
                     }
+
+                    //ANALYZE
                 } else if (choice.equals("2")) {
                     analyzer.analyzeNewValues(patient);
+
+                    //SEARCH
                 } else if (choice.equals("3")) {
                     searchTestMain();
+
+                    //CHOOSE NEW PATIENT
                 } else if (choice.equals("4")) {
                     break;
+
+                    //QUIT
                 } else if (choice.equals("5")) {
                     return;
                 }
@@ -91,10 +111,100 @@ public class Main {
         }
     }
 
+    public static void searchTestMain() {
+        String filters = "";
+        String filtersForDisplay = "";
+        while (true) {
+            String searchMethod = iOSys.displayMenu("::Selected filters:: " + "\n"
+                    + filtersForDisplay + "\n"
+                    + "\n"
+                    + "Please add at least one filter:", "LabTest type", "Date", "Flags", "Search using selected filters", "Go back to patient menu");
+            System.out.println();
+
+            //tests
+            if (searchMethod.equals("1")) {
+                String choice = iOSys.displayMenu("Select a test type to filter:", "Chemistry", "CBC");
+                if (choice.equals("1")) {
+                    System.out.println("Not yet implemented. Filter not added.");
+                    iOSys.waitForUser();
+                } else if (choice.equals("2")) {
+                    filters += "tCBC,";
+                    filtersForDisplay += "CBC, ";
+                }
+
+                //dates
+            } else if (searchMethod.equals("2")) {
+                String date = iOSys.promptForInput("Please enter the date you would like to filter for (YYYY-MM-DD):");
+                while (true) {
+                    try {
+                        LocalDate.parse(date);
+                        break;
+                    } catch (DateTimeParseException e) {
+                        date = iOSys.promptForInput("That is not a valid date. Please try again.");
+                    }
+                }
+                filters += "d" + date + ",";
+                filtersForDisplay += date + ", ";
+
+                //flags
+            } else if (searchMethod.equals("3")) {
+                String filterToAdd = iOSys.promptForInput("Please enter a flag to filter for:");
+                filters += "f" + filterToAdd + ",";
+                filtersForDisplay += filterToAdd + ", ";
+
+                //do the search!
+            } else if (searchMethod.equals("4")) {
+                if (!filters.isEmpty()) {
+                    iOSys.searchForTests(filters, patient);
+                    iOSys.waitForUser();
+                    return;
+                } else {
+                    System.out.println("Please enter at least one filter.");
+                    iOSys.waitForUser();
+                }
+
+                //return to main menu
+            } else if (searchMethod.equals("5")) {
+                return;
+            }
+        }
+
+    }
+
+    public static Patient searchPatientMain() {
+        Patient match = null;
+        String name = iOSys.promptForInput("Please enter all or part of the name you would like to search:");
+        List<Patient> matches = jdbcPatientDao.getPatientsByName(name, true);
+        int option = 0;
+        if (matches.isEmpty()) {
+            System.out.print("No matches.");
+            System.out.println();
+            iOSys.waitForUser();
+            return match;
+        }
+        System.out.println("Matches:");
+        for (Patient patient : matches) {
+            System.out.println(option + ") " + patient.toString());
+            option++;
+        }
+        while (true) {
+            String choice = iOSys.promptForInput("Please select a patient above by number");
+            try {
+                match = matches.get(Integer.parseInt(choice));
+                match.setTagObjects(jdbcTagDao.getTagsForPatient(match));
+                return match;
+            } catch (NumberFormatException e) {
+                System.out.println("Please select a number option.");
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("That is not a valid option.");
+            }
+        }
+    }
+
     public static void updatePatientMain() {
         boolean isMarkedForDelete = false;
         boolean isReadyToCommit = false;
-        Patient updatedPatient = new Patient(patient.getId(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive());
+        Patient updatedPatient = new Patient(patient.getId(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive(), patient.getTagObjects());
         while (!isReadyToCommit) {
             System.out.println("::Original::------------");
             iOSys.printPatientInfo(patient);
@@ -104,6 +214,7 @@ public class Main {
                     "Update name",
                     "Update sex",
                     "Update birthday",
+                    "Update Tags",
                     patient.isActive() ? "Mark inactive" : "Mark active",
                     "Commit changes",
                     "Delete patient and associated tests");
@@ -137,10 +248,67 @@ public class Main {
                 }
                 updatedPatient.setDateOfBirth(birthday);
             } else if (choice.equals("4")) {
-                updatedPatient.setActive(!patient.isActive());
+                String addDelete = iOSys.displayMenu("Would you like to:", "Add tags", "Delete tags");
+                System.out.print("Note: tags will update immediately.");
+                iOSys.waitForUser();
+                if (addDelete.equals("1")) {
+
+                    Map<String, Boolean> tagMap = new HashMap<>();
+                    while (true) {
+                        String tagToAdd = iOSys.promptForInput("Please enter a tag to add:");
+                        String yOrN = iOSys.promptForInput("Is this a diagnosis? (y/n)").toLowerCase();
+                        tagMap.put(tagToAdd, yOrN.equals("y"));
+                        String keepGoing = iOSys.promptForInput("Would you like to add more tags? (y/n)");
+                        if (keepGoing.equals("n")) {
+                            break;
+                        }
+                    }
+                    for (Map.Entry<String, Boolean> tag : tagMap.entrySet()) {
+                        Tag match = jdbcTagDao.searchForSingleTagByName(tag.getKey().toLowerCase());
+                        if (match == null) {
+                            match = new Tag(tag.getKey(), tag.getValue());
+                            match = jdbcTagDao.createTag(match);
+                        }
+                        jdbcPatientDao.linkTagToPatient(patient, match);
+                        patient.appendTagObjects(match);
+                    }
+
+                } else {
+                    while (true) {
+                        Tag tagToDelete = null;
+                        //TODO
+                        int option = 0;
+                        System.out.println("Matches:");
+                        for (Tag tag : patient.getTagObjects()) {
+                            System.out.println(option + ") " + tag.toString());
+                            option++;
+                        }
+                        while (true) {
+                            String tagChoice = iOSys.promptForInput("Please select a tag above by number to remove");
+                            try {
+                                tagToDelete = patient.getTagObjects().get(Integer.parseInt(tagChoice));
+                                break;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Please select a number option.");
+                            } catch (IndexOutOfBoundsException e) {
+                                System.out.println("That is not a valid option.");
+                            }
+                        }
+
+                        jdbcPatientDao.unlinkTagFromPatient(patient, tagToDelete);
+
+                        choice = iOSys.promptForInput("Would you like to delete another tag? (y/n)").toLowerCase();
+                        if (choice.equals("n")) {
+                            break;
+                        }
+                    }
+
+                }
             } else if (choice.equals("5")) {
-                isReadyToCommit = true;
+                updatedPatient.setActive(!patient.isActive());
             } else if (choice.equals("6")) {
+                isReadyToCommit = true;
+            } else if (choice.equals("7")) {
                 isMarkedForDelete = true;
             }
 
@@ -164,95 +332,8 @@ public class Main {
             patient.setActive(updatedPatient.isActive());
 
             patient = jdbcPatientDao.updatePatient(patient);
+            patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
 
-        }
-    }
-    public static void searchTestMain(){
-        String filters = "";
-        String filtersForDisplay = "";
-        while (true) {
-            String searchMethod = iOSys.displayMenu("::Selected filters:: " + "\n"
-                    + filtersForDisplay + "\n"
-                    + "\n"
-                    + "Please add at least one filter:", "LabTest type", "Date", "Flags", "Search using selected filters", "Go back to patient menu");
-            System.out.println();
-
-            //tests
-            if (searchMethod.equals("1")) {
-                String choice = iOSys.displayMenu("Select a test type to filter:", "Chemistry", "CBC");
-                if (choice.equals("1")) {
-                    System.out.println("Not yet implemented. Filter not added.");
-                    iOSys.waitForUser();
-                } else if (choice.equals("2")) {
-                    filters += "tCBC,";
-                    filtersForDisplay += "CBC, ";
-                }
-
-            //dates
-            } else if (searchMethod.equals("2")) {
-                String date = iOSys.promptForInput("Please enter the date you would like to filter for (YYYY-MM-DD):");
-                while (true) {
-                    try {
-                        LocalDate.parse(date);
-                        break;
-                    } catch (DateTimeParseException e) {
-                        date = iOSys.promptForInput("That is not a valid date. Please try again.");
-                    }
-                }
-                filters += "d" + date + ",";
-                filtersForDisplay += date + ", ";
-
-            //flags
-            } else if (searchMethod.equals("3")) {
-                String filterToAdd =  iOSys.promptForInput("Please enter a flag to filter for:");
-                filters += "f" + filterToAdd + ",";
-                filtersForDisplay += filterToAdd + ", ";
-
-            //do the search!
-            } else if (searchMethod.equals("4")){
-                if (!filters.isEmpty()) {
-                    iOSys.searchForTests(filters, patient);
-                    iOSys.waitForUser();
-                    return;
-                } else {
-                    System.out.println("Please enter at least one filter.");
-                    iOSys.waitForUser();
-                }
-
-            //return to main menu
-            } else if (searchMethod.equals("5")) {
-                return;
-            }
-        }
-
-    }
-
-    public static Patient searchPatientMain() {
-        Patient match = null;
-        String name = iOSys.promptForInput("Please enter all or part of the name you would like to search:");
-        List<Patient> matches = jdbcPatientDao.getPatientsByName(name, true);
-        int option = 0;
-        if (matches.isEmpty()) {
-            System.out.print("No matches.");
-            System.out.println();
-            iOSys.waitForUser();
-            return match;
-        }
-        System.out.println("Matches:");
-        for (Patient patient : matches) {
-            System.out.println(option + ") " + patient.toString());
-            option++;
-        }
-        while (true) {
-            String choice = iOSys.promptForInput("Please select a patient above by number");
-            try {
-                match = matches.get(Integer.parseInt(choice));
-                return match;
-            } catch (NumberFormatException e) {
-                System.out.println("Please select a number option.");
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("That is not a valid option.");
-            }
         }
     }
 

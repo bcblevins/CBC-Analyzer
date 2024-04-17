@@ -2,6 +2,7 @@ package org.bcb.dao;
 
 import org.bcb.exception.DaoException;
 import org.bcb.model.LabTest;
+import org.bcb.model.Patient;
 import org.bcb.model.Tag;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
@@ -72,6 +73,22 @@ public class JdbcTagDao {
                 "WHERE test_tag.test_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, test.getId());
+            while (rowSet.next()) {
+                tags.add(mapToTag(rowSet));
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return tags;
+    }
+    public List<Tag> getTagsForPatient(Patient patient) {
+        List<Tag> tags = new ArrayList<>();
+        String sql = "SELECT tag.tag_id, tag.name, tag.is_diagnosis " +
+                "FROM tag " +
+                "JOIN patient_tag ON patient_tag.tag_id = tag.tag_id " +
+                "WHERE patient_tag.patient_id = ?;";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, patient.getId());
             while (rowSet.next()) {
                 tags.add(mapToTag(rowSet));
             }

@@ -23,9 +23,7 @@ public class IOSystem {
     private final String ANSI_RESET_CODE = "\u001B[0m";
     static final String TEST_SEPARATOR = "::";
     static final String PATIENT_INFO_SEPARATOR = ";;";
-    public final int SEARCH_BY_NAME = 1;
-    public final int SEARCH_BY_DATE = 2;
-//    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
+    //    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
     private final Scanner input = new Scanner(System.in);
 
     //------------------
@@ -37,7 +35,7 @@ public class IOSystem {
         System.out.println(title);
         Set<String> options = new HashSet<>();
         int choiceNumber = 0;
-        for (int i = 0 ; i < args.length ; i++) {
+        for (int i = 0; i < args.length; i++) {
             choiceNumber = i + 1;
             options.add(String.valueOf(choiceNumber));
             System.out.println("  " + choiceNumber + ". " + args[i]);
@@ -56,7 +54,7 @@ public class IOSystem {
         return choice;
     }
 
-    public Map<String, Double> takeBloodValues(){
+    public Map<String, Double> takeBloodValues() {
         System.out.println("Please enter the following values one at a time. Do not include spaces or units.");
         Map<String, Double> bloodMap = new HashMap<>();
 
@@ -86,6 +84,7 @@ public class IOSystem {
 
         return bloodMap;
     }
+
     public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
         if (flags.isEmpty() && patient.getAgeFlag() == null) {
             flags = "";
@@ -130,22 +129,9 @@ public class IOSystem {
         }
         return outputTable.toString();
     }
-    public void writeTestToRecord(String table){
-        File logFile = new File(patient.getRecordFilePath());
-        try (PrintWriter dataOutput = new PrintWriter(
-                new FileOutputStream(logFile, true)
-        )) {
-            dataOutput.println(getDate());
-            dataOutput.println(removeColor(table)); //remove color so that log file is more readable.
-            dataOutput.println(TEST_SEPARATOR);
-        } catch (Exception e) {
-            System.out.println("Could not write to patient record.");
-        }
-    }
 
 
-    //TODO: Change to db search
-    public void searchForTests(String filters, Patient patient){
+    public void searchForTests(String filters, Patient patient) {
         List<String> typeFilters = new ArrayList<>();
         List<LocalDate> dateFilters = new ArrayList<>();
         List<String> flagFilters = new ArrayList<>();
@@ -154,15 +140,15 @@ public class IOSystem {
 
         //add filters to their respective lists, remove filter identifier (first character)
         for (String filter : filtersArray) {
-            if (filter.substring(0,1).equals("t")) {
+            if (filter.charAt(0) == 't') {
                 typeFilters.add(filter.substring(1));
-            } else if (filter.substring(0,1).equals("d")) {
+            } else if (filter.charAt(0) == 'd') {
                 try {
                     dateFilters.add(LocalDate.parse(filter.substring(1)));
                 } catch (DateTimeParseException e) {
                     System.out.println("Failed to parse search date");
                 }
-            } else if (filter.substring(0,1).equals("f")) {
+            } else if (filter.charAt(0) == 'f') {
                 flagFilters.add(filter.substring(1));
             }
         }
@@ -283,10 +269,11 @@ public class IOSystem {
         }
     }
 
-    public Patient selectPatientRecord(String chartId){
+    public Patient selectPatientRecord(String chartId) {
         Patient patient = jdbcPatientDao.getPatientByChartNumber(chartId);
 
         if (patient != null) {
+            patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
             System.out.println("This patient has a record on file.");
             waitForUser();
             return patient;
@@ -295,7 +282,7 @@ public class IOSystem {
             String choice = displayMenu("Would you like to:", "Set up a new patient record", "Choose another patient record", "Quit");
             if (choice.equals("1")) {
                 return createPatientRecord(chartId);
-            } else if (choice.equals("2")){
+            } else if (choice.equals("2")) {
                 return patient;
             } else {
                 patient = new Patient(true);
@@ -336,9 +323,7 @@ public class IOSystem {
         Patient patient = new Patient(chartId, name, sex, species, dateOfBirth);
         patient = jdbcPatientDao.createPatient(patient);
 
-        // String tagString = promptForInput("Please enter any tags you would like to attribute to this patient's record (tag1,tag2,tag3):");
 
-        // TODO TRYING TO ADD ISDIAGNOSIS THING
         Map<String, Boolean> tagMap = new HashMap<>();
         String addTags = displayMenu("Would you like to add tags for this patient?", "Yes", "No");
         if (addTags.equals("1")) {
@@ -351,13 +336,6 @@ public class IOSystem {
                     break;
                 }
             }
-        }
-
-
-
-        //if (!tagString.isEmpty()) {
-            //List<String> tags = List.of(tagString.split(","));
-            patient.setTags(new ArrayList<String>(tagMap.keySet()));
             for (Map.Entry<String, Boolean> tag : tagMap.entrySet()) {
                 Tag match = jdbcTagDao.searchForSingleTagByName(tag.getKey().toLowerCase());
                 if (match == null) {
@@ -365,39 +343,13 @@ public class IOSystem {
                     match = jdbcTagDao.createTag(match);
                 }
                 jdbcPatientDao.linkTagToPatient(patient, match);
+                patient.appendTagObjects(match);
             }
-        //}
+        }
+
 
         return patient;
 
-    }
-    private Patient getPatientRecord(File patientFile) {
-        List<String> patientInfo = new ArrayList<>();
-        try (Scanner dataInput = new Scanner(patientFile)) {
-            while (dataInput.hasNextLine()) {
-                String currentLine = dataInput.nextLine();
-                if (currentLine.equals("-")) {
-                    continue;
-                } else if (currentLine.equals(PATIENT_INFO_SEPARATOR)) {
-                    break;
-                }
-                patientInfo.add(currentLine);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("There was an issue reading the patient file.");
-        }
-
-        String id = patientInfo.get(0);
-        String name = patientInfo.get(1);
-        String sex = patientInfo.get(2);
-        String species = patientInfo.get(3);
-        String dob = patientInfo.get(4);
-        String flagsRaw = patientInfo.get(5);
-
-        LocalDate dateOfBirth = LocalDate.parse(dob);
-        List<String> flags = List.of(flagsRaw.split(","));
-
-        return new Patient(id, name, sex, species, dateOfBirth, flags, patientFile.getPath());
     }
 
     //----------------------
@@ -410,43 +362,91 @@ public class IOSystem {
         System.out.println("Species: |" + patient.getSpecies());
         System.out.println("Sex:     |" + patient.getSex());
         System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
-        System.out.println("Flags:   |" + patient.getTags());
+        System.out.println("Flags:   |" + patient.getTagNames());
     }
+
     private String createCell(String value, int cellSize) {
         return String.format("%" + (-cellSize) + "s", value) + "|";
     }
 
-    private String removeColor(String table) {
-        String colorlessTable;
-        colorlessTable = table.replace(ANSI_RED_CODE, "");
-        colorlessTable = colorlessTable.replace(ANSI_RESET_CODE, "");
-        return colorlessTable;
-    }
-    private String getDate() {
-        return LocalDate.now().toString();
-    }
-    public void printInRed(String message) {
-        System.out.println(ANSI_RED_CODE + message + ANSI_RESET_CODE);
-    }
     public String outlineInRed(String message) {
         return ANSI_RED_CODE + message + ANSI_RESET_CODE;
     }
-    public String promptForInput(String prompt){
+
+    public String promptForInput(String prompt) {
         System.out.println(prompt);
         return input.nextLine();
     }
+
     public void waitForUser() {
         promptForInput("Press enter when ready");
         System.out.println(SEPARATOR);
     }
-    public static void printSeparator(){
+
+    public static void printSeparator() {
         System.out.println("---------------------------------------------------------");
     }
 
-    //old methods I'm too scared to delete
-    //    public String takePatientName() {
-//        System.out.println("Please enter patient name: (last, first)");
-//
-//        return input.nextLine();
+// Deprecated
+
+    //    public void writeTestToRecord(String table) {
+//        File logFile = new File(patient.getRecordFilePath());
+//        try (PrintWriter dataOutput = new PrintWriter(
+//                new FileOutputStream(logFile, true)
+//        )) {
+//            dataOutput.println(getDate());
+//            dataOutput.println(removeColor(table)); //remove color so that log file is more readable.
+//            dataOutput.println(TEST_SEPARATOR);
+//        } catch (Exception e) {
+//            System.out.println("Could not write to patient record.");
+//        }
 //    }
+
+
+// ----------
+//    private Patient getPatientRecord(File patientFile) {
+//        List<String> patientInfo = new ArrayList<>();
+//        try (Scanner dataInput = new Scanner(patientFile)) {
+//            while (dataInput.hasNextLine()) {
+//                String currentLine = dataInput.nextLine();
+//                if (currentLine.equals("-")) {
+//                    continue;
+//                } else if (currentLine.equals(PATIENT_INFO_SEPARATOR)) {
+//                    break;
+//                }
+//                patientInfo.add(currentLine);
+//            }
+//        } catch (FileNotFoundException e) {
+//            System.out.println("There was an issue reading the patient file.");
+//        }
+//
+//        String id = patientInfo.get(0);
+//        String name = patientInfo.get(1);
+//        String sex = patientInfo.get(2);
+//        String species = patientInfo.get(3);
+//        String dob = patientInfo.get(4);
+//        String flagsRaw = patientInfo.get(5);
+//
+//        LocalDate dateOfBirth = LocalDate.parse(dob);
+//        List<String> flags = List.of(flagsRaw.split(","));
+//
+//        return new Patient(id, name, sex, species, dateOfBirth, flags, patientFile.getPath());
+//    }
+//
+//    private String removeColor(String table) {
+//        String colorlessTable;
+//        colorlessTable = table.replace(ANSI_RED_CODE, "");
+//        colorlessTable = colorlessTable.replace(ANSI_RESET_CODE, "");
+//        return colorlessTable;
+//    }
+//
+//    private String getDate() {
+//        return LocalDate.now().toString();
+//    }
+//
+//    public void printInRed(String message) {
+//        System.out.println(ANSI_RED_CODE + message + ANSI_RESET_CODE);
+//    }
+
+
 }

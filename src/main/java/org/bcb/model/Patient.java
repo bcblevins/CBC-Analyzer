@@ -14,6 +14,7 @@ public class Patient {
     private LocalDate dateOfBirth;
     private String ageFlag;
     private List<String> tags = new ArrayList<>();
+    private List<Tag> tagObjects = new ArrayList<>();
     private String recordFilePath;
     private boolean isQuitPatient;
     private boolean isPatientFound = true;
@@ -31,16 +32,16 @@ public class Patient {
         this.isQuitPatient = isQuitPatient;
     }
 
-    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> tags, String recordFilePath) {
-        this.chartNumber = chartNumber;
-        this.name = name;
-        this.sex = sex;
-        this.species = species;
-        this.dateOfBirth = dateOfBirth;
-        this.tags = tags;
-        this.recordFilePath = recordFilePath;
-        setAgeFlag();
-    }
+//    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> tags, String recordFilePath) {
+//        this.chartNumber = chartNumber;
+//        this.name = name;
+//        this.sex = sex;
+//        this.species = species;
+//        this.dateOfBirth = dateOfBirth;
+//        this.tags = tags;
+//        this.recordFilePath = recordFilePath;
+//        setAgeFlag();
+//    }
     public Patient(int id, String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
         this.id = id;
         this.chartNumber = chartNumber;
@@ -58,13 +59,14 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Patient(int id, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive) {
+    public Patient(int id, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
         this.isActive = isActive;
+        this.tagObjects = tags;
     }
 
     public String getAgeFlag() {
@@ -107,6 +109,13 @@ public class Patient {
         return dateOfBirth;
     }
 
+    public String getTagsString() {
+        String tagsString = "";
+        for (String tag : tags) {
+            tagsString += tag + ",";
+        }
+        return tagsString;
+    }
     public List<String> getTags() {
         return tags;
     }
@@ -159,5 +168,22 @@ public class Patient {
         this.tags = tags;
     }
 
+    public List<Tag> getTagObjects() {
+        return tagObjects;
+    }
+    public List<String> getTagNames() {
+        List<String> tagNames = new ArrayList<>();
+        for (Tag tag : tagObjects) {
+            tagNames.add(tag.getName());
+        }
+        return tagNames;
+    }
+
+    public void setTagObjects(List<Tag> tagObjects) {
+        this.tagObjects = tagObjects;
+    }
+    public void appendTagObjects(Tag tag) {
+        this.tagObjects.add(tag);
+    }
 }
 
