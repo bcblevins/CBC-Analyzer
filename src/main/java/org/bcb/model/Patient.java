@@ -5,43 +5,29 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Patient {
+public class Patient{
     private int id;
     private String chartNumber;
     private String name;
     private String sex;
     private String species;
     private LocalDate dateOfBirth;
-    private String ageFlag;
-    private List<String> tags = new ArrayList<>();
-    private List<Tag> tagObjects = new ArrayList<>();
-    private String recordFilePath;
+    private String ageTag;
+    private List<Tag> tags = new ArrayList<>();
     private boolean isQuitPatient;
     private boolean isPatientFound = true;
     private boolean isActive = true;
+    private boolean isAgeTagSet = false;
+
     public void setPatientFound(boolean patientFound) {
         isPatientFound = patientFound;
     }
-
     public boolean isPatientFound() {
         return isPatientFound;
     }
-
-
     public Patient (boolean isQuitPatient) {
         this.isQuitPatient = isQuitPatient;
     }
-
-//    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, List<String> tags, String recordFilePath) {
-//        this.chartNumber = chartNumber;
-//        this.name = name;
-//        this.sex = sex;
-//        this.species = species;
-//        this.dateOfBirth = dateOfBirth;
-//        this.tags = tags;
-//        this.recordFilePath = recordFilePath;
-//        setAgeFlag();
-//    }
     public Patient(int id, String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
         this.id = id;
         this.chartNumber = chartNumber;
@@ -49,8 +35,8 @@ public class Patient {
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
+        setAgeTag();
     }
-
     public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth) {
         this.chartNumber = chartNumber;
         this.name = name;
@@ -58,31 +44,43 @@ public class Patient {
         this.species = species;
         this.dateOfBirth = dateOfBirth;
     }
-
-    public Patient(int id, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive, List<Tag> tags) {
+    public Patient(int id, String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive, List<Tag> tags) {
         this.id = id;
+        this.chartNumber = chartNumber;
         this.name = name;
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
         this.isActive = isActive;
-        this.tagObjects = tags;
+        this.tags = tags;
     }
-
-    public String getAgeFlag() {
-        return ageFlag;
+    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive, List<Tag> tags) {
+        this.id = id;
+        this.chartNumber = chartNumber;
+        this.name = name;
+        this.sex = sex;
+        this.species = species;
+        this.dateOfBirth = dateOfBirth;
+        this.isActive = isActive;
+        this.tags = tags;
     }
-
-    public void setAgeFlag() {
-        Period period = Period.between(this.dateOfBirth, LocalDate.now());
-        if (period.getYears() >= 10) {
-            this.ageFlag = "senior";
-        } else if (period.getYears() >= 5) {
-            this.ageFlag = "adult";
-        } else if (period.getYears() >= 1){
-            this.ageFlag = "adolescent";
-        } else {
-            this.ageFlag = "puppy";
+    public String getAgeTag() {
+        return ageTag;
+    }
+    public void setAgeTag() {
+        if (this.dateOfBirth != null && !isAgeTagSet) {
+            Period period = Period.between(this.dateOfBirth, LocalDate.now());
+            if (period.getYears() >= 10) {
+                this.ageTag = "senior";
+            } else if (period.getYears() >= 5) {
+                this.ageTag = "adult";
+            } else if (period.getYears() >= 1) {
+                this.ageTag = "adolescent";
+            } else {
+                this.ageTag = "puppy";
+            }
+            tags.add(0, new Tag(ageTag, false));
+            this.isAgeTagSet = true;
         }
     }
     public String toString() {
@@ -107,21 +105,6 @@ public class Patient {
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    public String getTagsString() {
-        String tagsString = "";
-        for (String tag : tags) {
-            tagsString += tag + ",";
-        }
-        return tagsString;
-    }
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public String getRecordFilePath() {
-        return recordFilePath;
     }
 
     public boolean isQuitPatient() {
@@ -164,26 +147,25 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
 
-    public List<Tag> getTagObjects() {
-        return tagObjects;
+    public List<Tag> getTags() {
+        return tags;
     }
     public List<String> getTagNames() {
         List<String> tagNames = new ArrayList<>();
-        for (Tag tag : tagObjects) {
+        for (Tag tag : tags) {
             tagNames.add(tag.getName());
         }
         return tagNames;
     }
 
-    public void setTagObjects(List<Tag> tagObjects) {
-        this.tagObjects = tagObjects;
+    public void setTags(List<Tag> tags) {
+        this.isAgeTagSet = false;
+        this.tags = tags;
+        setAgeTag();
     }
-    public void appendTagObjects(Tag tag) {
-        this.tagObjects.add(tag);
+    public void appendTags(Tag tag) {
+        this.tags.add(tag);
     }
 }
 

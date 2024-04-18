@@ -6,24 +6,20 @@ import org.bcb.dao.JdbcPatientDao;
 import org.bcb.dao.JdbcLabTestDao;
 import org.bcb.dao.JdbcTagDao;
 import org.bcb.model.Patient;
-import org.bcb.model.Tag;
 
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.JarOutputStream;
 
 /*
     TODO:
-     Delete tags not deleting tags, displaying objects instead of names.
 
  */
 public class Main {
     public static IOSystem iOSys = new IOSystem();
     public static Analyzer analyzer = new Analyzer();
+    public static TagSystem tagSystem = new TagSystem();
     public static Patient patient;
     public static BasicDataSource dataSource;
     public static JdbcPatientDao jdbcPatientDao;
@@ -55,15 +51,20 @@ public class Main {
                     continue;
                 }
 
-                // PATIENT CHART NUMBER
+                // VALIDATE CHART NUMBER
             } else {
                 try {
                     Integer.parseInt(chartNumber);
+                    if (chartNumber.length() < 4 || chartNumber.length() > 6) {
+                        throw new NumberFormatException();
+                    }
                 } catch (NumberFormatException e) {
-                    System.out.println("That is not a valid chart number. Please try again.");
+                    System.out.println("That is not a valid chart number. Chart numbers are a combination of 4-6 digits. Please try again.");
                     iOSys.waitForUser();
                     continue;
                 }
+
+                // SELECT OR CREATE PATIENT
                 patient = iOSys.selectPatientRecord(chartNumber);
                 if (patient == null) {
                     continue;
@@ -191,7 +192,7 @@ public class Main {
             String choice = iOSys.promptForInput("Please select a patient above by number");
             try {
                 match = matches.get(Integer.parseInt(choice));
-                match.setTagObjects(jdbcTagDao.getTagsForPatient(match));
+                match.setTags(jdbcTagDao.getTagsForPatient(match));
                 return match;
             } catch (NumberFormatException e) {
                 System.out.println("Please select a number option.");
@@ -204,7 +205,7 @@ public class Main {
     public static void updatePatientMain() {
         boolean isMarkedForDelete = false;
         boolean isReadyToCommit = false;
-        Patient updatedPatient = new Patient(patient.getId(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive(), patient.getTagObjects());
+        Patient updatedPatient = new Patient(patient.getId(), patient.getChartNumber(), patient.getName(), patient.getSex(), patient.getSpecies(), patient.getDateOfBirth(), patient.isActive(), patient.getTags());
         while (!isReadyToCommit) {
             System.out.println("::Original::------------");
             iOSys.printPatientInfo(patient);
@@ -216,8 +217,10 @@ public class Main {
                     "Update birthday",
                     "Update Tags",
                     patient.isActive() ? "Mark inactive" : "Mark active",
+                    "Delete patient and associated tests" +
+                    "\n-----------------------------------------------",
                     "Commit changes",
-                    "Delete patient and associated tests");
+                    "back");
             if (choice.equals("1")) {
                 updatedPatient.setName(iOSys.promptForInput("Please enter new name (First Last): "));
 
@@ -252,71 +255,20 @@ public class Main {
                 System.out.println("Note: tags will update immediately. ");
                 iOSys.waitForUser();
                 if (addDelete.equals("1")) {
-
-                    Map<String, Boolean> tagMap = new HashMap<>();
-                    while (true) {
-                        String tagToAdd = iOSys.promptForInput("Please enter a tag to add:");
-                        if (tagToAdd.isEmpty() || !tagToAdd.matches("\\D+")) {   //string.matches(regex) returns a boolean for whether the string matches the regex
-                            System.out.println("Not a valid tag.");
-                            continue;
-                        }
-                        String yOrN = iOSys.promptForInput("Is this a diagnosis? (y/n)").toLowerCase();
-                        tagMap.put(tagToAdd, yOrN.equals("y"));
-                        String keepGoing = iOSys.promptForInput("Would you like to add more tags? (y/n)");
-                        if (keepGoing.equals("n")) {
-                            break;
-                        }
-                    }
-                    for (Map.Entry<String, Boolean> tag : tagMap.entrySet()) {
-                        Tag match = jdbcTagDao.searchForSingleTagByName(tag.getKey().toLowerCase());
-                        if (match == null) {
-                            match = new Tag(tag.getKey(), tag.getValue());
-                            match = jdbcTagDao.createTag(match);
-                        }
-                        jdbcPatientDao.linkTagToPatient(patient, match);
-                        patient.appendTagObjects(match);
-                    }
-
+                    patient = tagSystem.addTags(patient);
                 } else {
-                    while (true) {
-                        Tag tagToDelete = null;
-                        //TODO
-                        int option = 0;
-                        System.out.println("Matches:");
-                        for (Tag tag : patient.getTagObjects()) {
-                            System.out.println(option + ") " + tag.toString());
-                            option++;
-                        }
-                        String tagChoice = iOSys.promptForInput("Please select a tag above by number to remove");
-                        while (true) {
-                            try {
-                                tagToDelete = patient.getTagObjects().get(Integer.parseInt(tagChoice));
-                                break;
-                            } catch (NumberFormatException e) {
-                                System.out.println("Please select a number option.");
-                            } catch (IndexOutOfBoundsException e) {
-                                System.out.println("That is not a valid option.");
-                            }
-                            tagChoice = iOSys.promptForInput("");
-                        }
-
-                        jdbcPatientDao.unlinkTagFromPatient(patient, tagToDelete);
-                        choice = iOSys.promptForInput("Would you like to delete another tag? (y/n)").toLowerCase();
-                        if (choice.equals("n")) {
-                            break;
-                        }
-                    }
-
+                    patient = tagSystem.removeTagsFromPatient(patient);
                 }
-                patient = jdbcPatientDao.getPatientById(patient.getId());
-                patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
-                updatedPatient.setTagObjects(patient.getTagObjects());
+                updatedPatient.setTags(patient.getTags());
+
             } else if (choice.equals("5")) {
                 updatedPatient.setActive(!patient.isActive());
             } else if (choice.equals("6")) {
-                isReadyToCommit = true;
-            } else if (choice.equals("7")) {
                 isMarkedForDelete = true;
+            } else if (choice.equals("7")) {
+                isReadyToCommit = true;
+            } else if (choice.equals("8")) {
+                return;
             }
 
             if (isMarkedForDelete) {
@@ -339,7 +291,7 @@ public class Main {
             patient.setActive(updatedPatient.isActive());
 
             patient = jdbcPatientDao.updatePatient(patient);
-            patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
+            patient.setTags(jdbcTagDao.getTagsForPatient(patient));
         }
     }
 

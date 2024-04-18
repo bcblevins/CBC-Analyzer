@@ -5,6 +5,7 @@ import org.bcb.exception.DaoException;
 import org.bcb.model.BloodParameter;
 import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
+import org.bcb.model.Tag;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -111,6 +112,7 @@ public class JdbcLabTestDao {
             throw new DaoException("Data integrity violation");
         }
         linkTestToResults(bloodParameterList, newTest);
+        newTest.setBloodParameterList(bloodParameterList);
         return newTest;
     }
 
@@ -129,6 +131,21 @@ public class JdbcLabTestDao {
             } catch (DataIntegrityViolationException e) {
                 throw new DaoException("Data integrity violation");
             }
+        }
+    }
+    public void linkTagToLabTest(LabTest labTest, Tag tag) {
+        int rowsAffected;
+        String sql = "INSERT INTO test_tag (test_id, tag_id) values " +
+                "(?, ?);";
+        try {
+            rowsAffected = jdbcTemplate.update(sql, labTest.getId(), tag.getId());
+            if (rowsAffected == 0) {
+                throw new DaoException("Failed to link tag to test");
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        } catch (DataIntegrityViolationException e) {
+            throw new DaoException("Data integrity violation");
         }
     }
 

@@ -102,24 +102,6 @@ public class JdbcPatientDao {
         return updated;
     }
 
-    public Patient changePatientActiveStatus(Patient patient) {
-        Patient updated = null;
-        String sql = "UPDATE patient set active = ? " +
-                "where patient_id = ?";
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, !patient.isActive(), patient.getId());
-            if (rowsAffected == 0) {
-                throw new DaoException("No rows updated, expected at least 1.");
-            } else {
-                updated = getPatientByChartNumber(patient.getChartNumber());
-            }
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Could not connect to database");
-        } catch (DataIntegrityViolationException e) {
-            throw new DaoException("Data integrity violation");
-        }
-        return updated;
-    }
     public int[] deletePatient(Patient patient) {
         int patientsAffected = 0;
         int testsAffected = 0;
@@ -140,21 +122,21 @@ public class JdbcPatientDao {
     }
 
 
-    public void linkTestToPatient(Patient patient, LabTest labTest) {
-        int rowsAffected;
-        String sql = "INSERT INTO patient_test(patient_id, test_id) VALUES " +
-                "(?, ?);";
-        try {
-            rowsAffected = jdbcTemplate.update(sql, patient.getId(), labTest.getId());
-            if (rowsAffected == 0) {
-                throw new DaoException("Failed to link test to patient");
-            }
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Could not connect to database");
-        } catch (DataIntegrityViolationException e) {
-            throw new DaoException("Data integrity violation");
-        }
-    }
+//    public void linkTestToPatient(Patient patient, LabTest labTest) {
+//        int rowsAffected;
+//        String sql = "INSERT INTO patient_test(patient_id, test_id) VALUES " +
+//                "(?, ?);";
+//        try {
+//            rowsAffected = jdbcTemplate.update(sql, patient.getId(), labTest.getId());
+//            if (rowsAffected == 0) {
+//                throw new DaoException("Failed to link test to patient");
+//            }
+//        } catch (CannotGetJdbcConnectionException e) {
+//            throw new DaoException("Could not connect to database");
+//        } catch (DataIntegrityViolationException e) {
+//            throw new DaoException("Data integrity violation");
+//        }
+//    }
 
     public void linkTagToPatient(Patient patient, Tag tag) {
         int rowsAffected;

@@ -1,11 +1,15 @@
 package org.bcb.app;
 
 import org.bcb.model.BloodParameter;
+import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
 
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
+
+import static org.bcb.app.Main.iOSys;
+import static org.bcb.app.Main.tagSystem;
 
 //TODO: Get blood parameters from DB so that they have IDs
 public class Analyzer {
@@ -15,7 +19,7 @@ public class Analyzer {
     private final BloodParameter WBC = new BloodParameter(1, "White Blood Cells", 4, 15.5, " 10^3/mcL");
     private final BloodParameter RBC = new BloodParameter(2, "Red Blood Cells", 4.8, 9.3, " 10^6/mcL");
     private final BloodParameter HEMOGLOBIN = new BloodParameter(3, "Hemoglobin", 12.1, 20.3, " g/dl");
-    private final BloodParameter HEMATOCRIT = new BloodParameter(4, "Hematocrit", 36, 60, " %" );
+    private final BloodParameter HEMATOCRIT = new BloodParameter(4, "Hematocrit", 36, 60, " %");
     private final BloodParameter MCV = new BloodParameter(5, "Mean Crepuscular Volume", 58, 79, " fL");
     private final BloodParameter PLATELETS = new BloodParameter(6, "Platelets", 170, 400, " 10^3/mcL");
 
@@ -28,6 +32,7 @@ public class Analyzer {
         put(MCV.getName(), MCV);
         put(PLATELETS.getName(), PLATELETS);
     }};
+
     private Map<String, Double> randomBloodValueGenerator() {
         Random rand = new Random();
 
@@ -42,17 +47,18 @@ public class Analyzer {
           - There is probably an explicit way to limit decimal length while keeping the types as doubles
          */
         Map<String, Double> bloodMap = new HashMap<>() {{
-            put(WBC.getName(), rand.nextInt(40, 150)/10.0);
-            put(RBC.getName(), rand.nextInt(450, 825)/100.0);
-            put(HEMOGLOBIN.getName(), rand.nextInt(119,189)/10.0);
-            put(HEMATOCRIT.getName(), (double)rand.nextInt(20, 75));
-            put(MCV.getName(), (double)rand.nextInt(60, 85));
-            put(PLATELETS.getName(), (double)rand.nextInt(190, 750));
+            put(WBC.getName(), rand.nextInt(40, 150) / 10.0);
+            put(RBC.getName(), rand.nextInt(450, 825) / 100.0);
+            put(HEMOGLOBIN.getName(), rand.nextInt(119, 189) / 10.0);
+            put(HEMATOCRIT.getName(), (double) rand.nextInt(20, 75));
+            put(MCV.getName(), (double) rand.nextInt(60, 85));
+            put(PLATELETS.getName(), (double) rand.nextInt(190, 750));
         }};
 
 
         return bloodMap;
     }
+
     public void analyzeNewValues(Patient patient) {
         String choice = IO_SYSTEM.displayMenu("Would you like to:", "Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)", "Go back to patient menu");
         Map<String, Double> bloodInputMap = new HashMap<>();
@@ -63,17 +69,15 @@ public class Analyzer {
 
         if (choice.equals("1")) {
             bloodInputMap = IO_SYSTEM.takeBloodValues();
-//            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             isWrittenToDb = true;
         } else if (choice.equals("2")) {
-            //TODO: REMOVE THIS LINE
-//            flags = IO_SYSTEM.promptForInput("Please enter any flags you would like to add to this test, separated by commas (flag1,flag2,flag3) or press enter to add none:");
             bloodInputMap = randomBloodValueGenerator();
         } else if (choice.equals("3")) {
             return;
         }
-        LocalDateTime timeStamp = LocalDateTime.now();
+        LabTest labTest = new LabTest();
 
+        LocalDateTime timeStamp = LocalDateTime.now();
 
         //Loop through Map and call BloodParameter method analyzeParameter.
         for (Map.Entry<String, Double> bloodValue : bloodInputMap.entrySet()) {
@@ -95,11 +99,16 @@ public class Analyzer {
             add(PLATELETS);
         }};
 
-        String outputTable = IO_SYSTEM.createTable(bloodParameterList, "CBC", flags, timeStamp);
-        if (isWrittenToDb) {
-            Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp, patient);
-            //IO_SYSTEM.writeTestToRecord(outputTable);
+
+        labTest = Main.jdbcLabTestDao.createTest(bloodParameterList, timeStamp, patient);
+        labTest.setType("CBC");
+
+        String addTags = iOSys.displayMenu("Would you like to add tags for this test?", "Yes", "No");
+        if (addTags.equals("1")) {
+            labTest = tagSystem.addTags(labTest);
         }
+
+        String outputTable = IO_SYSTEM.createTable(labTest);
         IOSystem.printSeparator();
         System.out.println(outputTable);
         IOSystem.printSeparator();

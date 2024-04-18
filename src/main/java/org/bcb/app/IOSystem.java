@@ -5,10 +5,6 @@ import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
 import org.bcb.model.Tag;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -21,9 +17,6 @@ public class IOSystem {
     private final String SEPARATOR = "---------------------------------------------------------";
     private final String ANSI_RED_CODE = "\u001B[31m";
     private final String ANSI_RESET_CODE = "\u001B[0m";
-    static final String TEST_SEPARATOR = "::";
-    static final String PATIENT_INFO_SEPARATOR = ";;";
-    //    private final JdbcPatientDao patientDao = new JdbcPatientDao(dataSource);
     private final Scanner input = new Scanner(System.in);
 
     //------------------
@@ -86,10 +79,10 @@ public class IOSystem {
     }
 
     public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
-        if (flags.isEmpty() && patient.getAgeFlag() == null) {
+        if (flags.isEmpty() && patient.getAgeTag() == null) {
             flags = "";
         } else {
-            flags = patient.getAgeFlag() + "," + flags;
+            flags = patient.getAgeTag() + "," + flags;
         }
         LocalDate date = timestamp.toLocalDate();
 
@@ -103,6 +96,51 @@ public class IOSystem {
                         "--------------------------|----------|---------------|----------|\n");
 
         for (BloodParameter bloodParameter : bloodParameterList) {
+            //create name cells for each bloodParameter
+            String nameCell = createCell(bloodParameter.getName(), 26);
+
+            //create result cells
+            String resultCell = createCell(bloodParameter.getAnalyzedBloodValue(), 10);
+
+            //create normal range cells
+            String normalRangeCell = createCell(bloodParameter.getNormalRangeForOutput(), 15);
+
+            //create unit cells
+            String unitCell = createCell(bloodParameter.getUnit(), 10);
+
+            //create row
+            String row = nameCell + resultCell + normalRangeCell + unitCell;
+
+            //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
+            if (bloodParameter.isOutsideNormalRange()) {
+                outputTable.append(outlineInRed(row));
+                outputTable.append("\n");
+            } else {
+                outputTable.append(row);
+                outputTable.append("\n");
+            }
+        }
+        return outputTable.toString();
+    }
+    public String createTable(LabTest labTest) {
+        String tags;
+        if (labTest.getTagNames().isEmpty() && patient.getAgeTag() == null) {
+            tags = "";
+        } else {
+            tags = patient.getAgeTag() + "," + labTest.getTagNames();
+        }
+        LocalDate date = labTest.getTimestamp().toLocalDate();
+
+        String timestampFormatted = date.toString() + " " + labTest.getTimestamp().getHour() + ":" + labTest.getTimestamp().getMinute() + ":" + labTest.getTimestamp().getSecond();
+
+        StringBuilder outputTable =
+                new StringBuilder(labTest.getType() + "\n" +
+                        timestampFormatted + "\n" +
+                        tags + "\n" +
+                        "Parameter                 |Result    |Normal Range   | Unit     |\n" +
+                        "--------------------------|----------|---------------|----------|\n");
+
+        for (BloodParameter bloodParameter : labTest.getBloodParameterList()) {
             //create name cells for each bloodParameter
             String nameCell = createCell(bloodParameter.getName(), 26);
 
@@ -265,7 +303,7 @@ public class IOSystem {
             for (Tag tag : jdbcTagDao.getTagsForTest(test)) {
                 tags.append(tag.getName()).append(",");
             }
-            System.out.println(createTable(new ArrayList<BloodParameter>(test.getResults().values()), "CBC", tags.toString(), test.getTimeStamp()));
+            System.out.println(createTable(test));
         }
     }
 
@@ -273,7 +311,7 @@ public class IOSystem {
         Patient patient = jdbcPatientDao.getPatientByChartNumber(chartId);
 
         if (patient != null) {
-            patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
+            patient.setTags(jdbcTagDao.getTagsForPatient(patient));
             System.out.println("This patient has a record on file.");
             waitForUser();
             return patient;
@@ -324,30 +362,10 @@ public class IOSystem {
         patient = jdbcPatientDao.createPatient(patient);
 
 
-        Map<String, Boolean> tagMap = new HashMap<>();
         String addTags = displayMenu("Would you like to add tags for this patient?", "Yes", "No");
         if (addTags.equals("1")) {
-            while (true) {
-                String tagToAdd = promptForInput("Please enter a tag to add:");
-                String yOrN = promptForInput("Is this a diagnosis? (y/n)").toLowerCase();
-                tagMap.put(tagToAdd, yOrN.equals("y"));
-                String keepGoing = promptForInput("Would you like to add more tags? (y/n)");
-                if (keepGoing.equals("n")) {
-                    break;
-                }
-            }
-            for (Map.Entry<String, Boolean> tag : tagMap.entrySet()) {
-                Tag match = jdbcTagDao.searchForSingleTagByName(tag.getKey().toLowerCase());
-                if (match == null) {
-                    match = new Tag(tag.getKey(), tag.getValue());
-                    match = jdbcTagDao.createTag(match);
-                }
-                jdbcPatientDao.linkTagToPatient(patient, match);
-                patient.appendTagObjects(match);
-            }
+            patient = tagSystem.addTags(patient);
         }
-
-
         return patient;
 
     }
