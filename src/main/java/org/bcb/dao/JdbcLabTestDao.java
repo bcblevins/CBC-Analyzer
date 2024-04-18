@@ -186,12 +186,14 @@ public class JdbcLabTestDao {
                     rowSet.getString("unit")
             );
             results.put(bloodParameter.getName(), bloodParameter);
+
             if (parameterId == 6) {
                 break;
             }
             rowSet.next();
         }
         labTest.setResults(results);
+        labTest.setBloodParameterList(new ArrayList<>(results.values()));
         return labTest;
     }
 }

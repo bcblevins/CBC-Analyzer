@@ -13,7 +13,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /*
-    TODO:
+    TODO: search tests display not showing tags, test type showing null
 
  */
 public class Main {
