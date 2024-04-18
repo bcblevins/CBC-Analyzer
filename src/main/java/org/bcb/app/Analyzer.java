@@ -105,6 +105,7 @@ public class Analyzer {
         IOSystem.printSeparator();
     }
 
+
     //---------------------------
     //BloodParameter name Getters
     //---------------------------

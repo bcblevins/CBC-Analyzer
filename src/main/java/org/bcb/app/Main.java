@@ -177,7 +177,7 @@ public class Main {
         List<Patient> matches = jdbcPatientDao.getPatientsByName(name, true);
         int option = 0;
         if (matches.isEmpty()) {
-            System.out.print("No matches.");
+            System.out.println("No matches.");
             System.out.println();
             iOSys.waitForUser();
             return match;
@@ -249,13 +249,17 @@ public class Main {
                 updatedPatient.setDateOfBirth(birthday);
             } else if (choice.equals("4")) {
                 String addDelete = iOSys.displayMenu("Would you like to:", "Add tags", "Delete tags");
-                System.out.print("Note: tags will update immediately.");
+                System.out.println("Note: tags will update immediately. ");
                 iOSys.waitForUser();
                 if (addDelete.equals("1")) {
 
                     Map<String, Boolean> tagMap = new HashMap<>();
                     while (true) {
                         String tagToAdd = iOSys.promptForInput("Please enter a tag to add:");
+                        if (tagToAdd.isEmpty() || !tagToAdd.matches("\\D+")) {   //string.matches(regex) returns a boolean for whether the string matches the regex
+                            System.out.println("Not a valid tag.");
+                            continue;
+                        }
                         String yOrN = iOSys.promptForInput("Is this a diagnosis? (y/n)").toLowerCase();
                         tagMap.put(tagToAdd, yOrN.equals("y"));
                         String keepGoing = iOSys.promptForInput("Would you like to add more tags? (y/n)");
@@ -283,8 +287,8 @@ public class Main {
                             System.out.println(option + ") " + tag.toString());
                             option++;
                         }
+                        String tagChoice = iOSys.promptForInput("Please select a tag above by number to remove");
                         while (true) {
-                            String tagChoice = iOSys.promptForInput("Please select a tag above by number to remove");
                             try {
                                 tagToDelete = patient.getTagObjects().get(Integer.parseInt(tagChoice));
                                 break;
@@ -293,10 +297,10 @@ public class Main {
                             } catch (IndexOutOfBoundsException e) {
                                 System.out.println("That is not a valid option.");
                             }
+                            tagChoice = iOSys.promptForInput("");
                         }
 
                         jdbcPatientDao.unlinkTagFromPatient(patient, tagToDelete);
-
                         choice = iOSys.promptForInput("Would you like to delete another tag? (y/n)").toLowerCase();
                         if (choice.equals("n")) {
                             break;
@@ -304,6 +308,9 @@ public class Main {
                     }
 
                 }
+                patient = jdbcPatientDao.getPatientById(patient.getId());
+                patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
+                updatedPatient.setTagObjects(patient.getTagObjects());
             } else if (choice.equals("5")) {
                 updatedPatient.setActive(!patient.isActive());
             } else if (choice.equals("6")) {
@@ -333,8 +340,9 @@ public class Main {
 
             patient = jdbcPatientDao.updatePatient(patient);
             patient.setTagObjects(jdbcTagDao.getTagsForPatient(patient));
-
         }
     }
+
+
 
 }

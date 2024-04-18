@@ -15,6 +15,9 @@ public class Tag {
         this.name = name;
         this.isDiagnosis = isDiagnosis;
     }
+    public String toString() {
+        return name + " [" + (isDiagnosis ? "diagnosis" : "not a diagnosis") + "]";
+    }
 
     public int getId() {
         return id;
