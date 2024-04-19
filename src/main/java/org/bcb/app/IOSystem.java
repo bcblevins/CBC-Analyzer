@@ -124,10 +124,11 @@ public class IOSystem {
     }
     public String createTable(LabTest labTest) {
         String tags;
+        labTest.prependTags(patient.getAgeTagObject());
         if (labTest.getTagNames().isEmpty() && patient.getAgeTag() == null) {
             tags = "";
         } else {
-            tags = patient.getAgeTag() + "," + labTest.getTagNames();
+            tags = labTest.getTagNames().toString();
         }
         LocalDate date = labTest.getTimestamp().toLocalDate();
 
@@ -288,9 +289,6 @@ public class IOSystem {
         }
 
         */
-        for (LabTest labTest : matchingTests) {
-
-        }
 
         if (matchingTests.isEmpty()) {
             System.out.println("No log entries matching selected filters.");

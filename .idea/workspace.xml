@@ -7,8 +7,11 @@
     <list default="true" id="b57b9b50-e517-4bd5-aee9-2373f02c6272" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/app/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/model/LabTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/model/LabTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcb/model/Patient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/bcb/TestingDatabaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/bcb/TestingDatabaseConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/test-data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/test-data.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +74,7 @@
       <recent name="org.bcb" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="JUnit.PatientDaoTests">
     <configuration name="Main" type="Application" factoryName="Application">
       <envs>
         <env name="PASSWORD" value="postgres1" />
@@ -152,13 +155,13 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/bcb/dao/JdbcLabTestDao.java</url>
-          <line>137</line>
+          <line>147</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/org/bcb/TestingDatabaseConfig.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="27" />
+          <url>file://$PROJECT_DIR$/src/main/java/org/bcb/app/IOSystem.java</url>
+          <line>194</line>
+          <option name="timeStamp" value="29" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

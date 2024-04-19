@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 DROP TABLE IF EXISTS test_tag;
 DROP TABLE IF EXISTS patient_tag;
 DROP TABLE IF EXISTS result;
@@ -111,3 +113,5 @@ INSERT INTO result (test_id, parameter_id, result_value) values
 	(1, 4, 54.0),
 	(1, 5, 67.0),
 	(1, 6, 330.0);
+
+COMMIT;

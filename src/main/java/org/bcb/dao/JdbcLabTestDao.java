@@ -21,6 +21,8 @@ import java.util.Map;
 
 public class JdbcLabTestDao {
     private final JdbcTemplate jdbcTemplate;
+    JdbcTagDao jdbcTagDao = new JdbcTagDao(Main.dataSource);
+
     public JdbcLabTestDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -49,7 +51,9 @@ public class JdbcLabTestDao {
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, date, patient.getId());
             while (rowSet.next()) {
-                tests.add(mapToLabTest(rowSet));
+                LabTest labTest = mapToLabTest(rowSet);
+                labTest.setTags(jdbcTagDao.getTagsForTest(labTest));
+                tests.add(labTest);
             }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
@@ -66,7 +70,9 @@ public class JdbcLabTestDao {
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, patient.getId());
             while (rowSet.next()) {
-                tests.add(mapToLabTest(rowSet));
+                LabTest labTest = mapToLabTest(rowSet);
+                labTest.setTags(jdbcTagDao.getTagsForTest(labTest));
+                tests.add(labTest);
             }
         }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
@@ -79,7 +85,9 @@ public class JdbcLabTestDao {
                 "FROM test " +
                 "JOIN result ON result.test_id = test.test_id " +
                 "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
-                "WHERE name ILIKE ?;";
+                "JOIN test_tag ON test_tag.test_id = test.test_id " +
+                "JOIN tag ON tag.tag_id = test_tag.tag_id " +
+                "WHERE tag.name ILIKE ?";
         try {
             for (String tag : tags) {
                 if (wildCard) {
@@ -87,7 +95,9 @@ public class JdbcLabTestDao {
                 }
                 SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, tag);
                 while (rowSet.next()) {
-                    tests.add(mapToLabTest(rowSet));
+                    LabTest labTest = mapToLabTest(rowSet);
+                    labTest.setTags(jdbcTagDao.getTagsForTest(labTest));
+                    tests.add(labTest);
                 }
             }
 
@@ -151,7 +161,7 @@ public class JdbcLabTestDao {
 
     private LabTest mapToLabTestSimple (SqlRowSet rowSet) {
         LabTest labTest = new LabTest();
-
+        labTest.setType("CBC");
         labTest.setId(rowSet.getInt("test_id"));
         labTest.setPatientId(rowSet.getInt("patient_id"));
         if (!rowSet.wasNull()) {
@@ -164,7 +174,7 @@ public class JdbcLabTestDao {
         LabTest labTest = new LabTest();
         boolean isFirstPass = true;
         Map<String, BloodParameter> results = new HashMap();
-
+        labTest.setType("CBC");
         boolean isTimeToStop = false;
 
         while (true) {

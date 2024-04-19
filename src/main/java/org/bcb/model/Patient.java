@@ -67,6 +67,9 @@ public class Patient{
     public String getAgeTag() {
         return ageTag;
     }
+    public Tag getAgeTagObject() {
+        return tags.get(0);
+    }
     public void setAgeTag() {
         if (this.dateOfBirth != null && !isAgeTagSet) {
             Period period = Period.between(this.dateOfBirth, LocalDate.now());

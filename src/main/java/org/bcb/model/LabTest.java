@@ -63,6 +63,9 @@ public class LabTest{
     public void appendTags(Tag tag) {
         this.tags.add(tag);
     }
+    public void prependTags (Tag tag) {
+        this.tags.add(0, tag);
+    }
     public List<String> getTagNames() {
         List<String> tagNames = new ArrayList<>();
         if (!this.tags.isEmpty()) {
