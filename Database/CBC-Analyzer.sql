@@ -55,6 +55,21 @@ CREATE TABLE "test_tag" (
   CONSTRAINT PK_test_tag PRIMARY KEY (test_id, tag_id)
 );
 
+CREATE TABLE "user" (
+    "user_id" serial PRIMARY KEY,
+    "first_name" varchar(50) NOT NULL,
+    "last_name" varchar(50) NOT NULL,
+    "is_doctor" boolean DEFAULT false,
+    "username" varchar(15) UNIQUE NOT NULL,
+    "password" varchar(20) NOT NULL
+);
+
+CREATE TABLE "parent_patient" (
+    "parent_id" int NOT NULL,
+    "patient_id" in NOT NULL,
+    CONSTRAINT PK_parent_patient PRIMARY KEY (parent_id, patient_id)
+);
+
 ALTER TABLE "test" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
 
 ALTER TABLE "result" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id") ON DELETE CASCADE;
@@ -68,6 +83,12 @@ ALTER TABLE "patient_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id")
 ALTER TABLE "test_tag" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id") ON DELETE CASCADE;
 
 ALTER TABLE "test_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
+
+ALTER TABLE "parent_patient" ADD FOREIGN KEY ("parent_id") REFERENCES "user" ("user_id");
+
+ALTER TABLE "parent_patient" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
+
+
 
 -- Filling Tables
 
@@ -111,4 +132,11 @@ INSERT INTO result (test_id, parameter_id, result_value) values
 	(1, 4, 54.0),
 	(1, 5, 67.0),
 	(1, 6, 330.0);
-	
+
+INSERT INTO "user" (first_name, last_name, is_doctor, username, password) VALUES
+    ("Beau", "Blevins", false, "bblevins", "1234"),
+    ("Chris", "Kelly", true, "testdoctor", "1234");
+
+INSERT INTO "parent_patient" (parent_id, patient_id) VALUES
+    (1, 1),
+    (1, 3);
