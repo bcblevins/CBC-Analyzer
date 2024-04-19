@@ -110,8 +110,8 @@ public class JdbcPatientDao {
         String sqlT = "DELETE FROM test WHERE patient_id = ?;";
 
         try {
-            patientsAffected = jdbcTemplate.update(sqlP, patient.getId());
             testsAffected = jdbcTemplate.update(sqlT, patient.getId());
+            patientsAffected = jdbcTemplate.update(sqlP, patient.getId());
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Database connection error", e);
         } catch (DataIntegrityViolationException e) {

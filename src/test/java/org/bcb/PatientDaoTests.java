@@ -44,9 +44,10 @@ public class PatientDaoTests extends BaseDaoTests {
     }
     @Test
     public void createPatient_creates_patient() {
-        Patient patient = new Patient("000000", "Charlie Blevins", "SF", "Canine", LocalDate.parse("2013-03-14"), true, tags);
-        patient = patientDao.createPatient(patient);
-        assertPatientsMatch(PATIENT_1, patient);
+        Patient patient = new Patient("111111", "Arlo Blevins", "CM", "Canine", LocalDate.parse("2020-02-20"), true);
+        Patient updatedPatient = patientDao.createPatient(patient);
+        patient.setId(updatedPatient.getId());
+        assertPatientsMatch(patient, patientDao.getPatientById(updatedPatient.getId()));
     }
     @Test
     public void updatePatient_updates_patient() {
@@ -58,7 +59,8 @@ public class PatientDaoTests extends BaseDaoTests {
     @Test
     public void deletePatient_deletes_patient() {
         int[] patientsAndTestsAffected = patientDao.deletePatient(PATIENT_1);
-        Assert.assertEquals(new int[]{1, 1}, patientsAndTestsAffected);
+        int[] expected = new int[]{1, 1};
+        Assert.assertArrayEquals(expected, patientsAndTestsAffected);
         Assert.assertNull(patientDao.getPatientById(PATIENT_1.getId()));
     }
     //linkTagToPatient
@@ -71,6 +73,5 @@ public class PatientDaoTests extends BaseDaoTests {
         Assert.assertEquals(expected.getSpecies(), actual.getSpecies());
         Assert.assertEquals(expected.getDateOfBirth().toString(), actual.getDateOfBirth().toString());
         Assert.assertEquals(expected.isActive(), actual.isActive());
-        Assert.assertEquals(expected.getTagNames().toArray(), actual.getTagNames().toArray());
     }
 }

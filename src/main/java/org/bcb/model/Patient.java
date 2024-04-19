@@ -54,15 +54,14 @@ public class Patient{
         this.isActive = isActive;
         this.tags = tags;
     }
-    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive, List<Tag> tags) {
-        this.id = id;
+    public Patient(String chartNumber, String name, String sex, String species, LocalDate dateOfBirth, boolean isActive) {
         this.chartNumber = chartNumber;
         this.name = name;
         this.sex = sex;
         this.species = species;
         this.dateOfBirth = dateOfBirth;
         this.isActive = isActive;
-        this.tags = tags;
+
     }
     public String getAgeTag() {
         return ageTag;
