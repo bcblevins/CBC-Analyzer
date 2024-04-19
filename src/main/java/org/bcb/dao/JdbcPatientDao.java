@@ -4,6 +4,7 @@ import org.bcb.exception.DaoException;
 import org.bcb.model.Patient;
 import org.bcb.model.LabTest;
 import org.bcb.model.Tag;
+import org.bcb.model.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -62,6 +63,25 @@ public class JdbcPatientDao {
             }
 
         } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Could not connect to database");
+        }
+        return patients;
+    }
+    public List<Patient> getPatientsForUser(User user) {
+        if (user.isDoctor()) {
+            throw new DaoException("Doctor account cannot be a parent of a patient.");
+        }
+        List<Patient> patients = new ArrayList<>();
+        String sql = "SELECT patient.* FROM patient " +
+                "JOIN parent_patient ON parent_patient.patient_id = patient.patient_id " +
+                "WHERE parent_patient.parent_id = ?";
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, user.getId());
+            while (rowSet.next()) {
+                Patient patient = mapToPatient(rowSet);
+                patients.add(patient);
+            }
+        }  catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Could not connect to database");
         }
         return patients;

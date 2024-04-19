@@ -108,7 +108,7 @@ public class Analyzer {
             labTest = tagSystem.addTags(labTest);
         }
 
-        String outputTable = IO_SYSTEM.createTable(labTest);
+        String outputTable = IO_SYSTEM.createTable(labTest, patient);
         IOSystem.printSeparator();
         System.out.println(outputTable);
         IOSystem.printSeparator();

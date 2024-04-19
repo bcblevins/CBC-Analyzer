@@ -1,11 +1,10 @@
 package org.bcb.app;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.bcb.dao.JdbcBloodParameterDao;
-import org.bcb.dao.JdbcPatientDao;
-import org.bcb.dao.JdbcLabTestDao;
-import org.bcb.dao.JdbcTagDao;
+import org.bcb.dao.*;
+import org.bcb.model.LabTest;
 import org.bcb.model.Patient;
+import org.bcb.model.User;
 
 
 import java.time.LocalDate;
@@ -26,6 +25,9 @@ public class Main {
     public static JdbcLabTestDao jdbcLabTestDao;
     public static JdbcBloodParameterDao jdbcBloodParameterDao;
     public static JdbcTagDao jdbcTagDao;
+    public static JdbcUserDao jdbcUserDao;
+    public static User user;
+
 
     public static void main(String[] args) {
         dataSource = new BasicDataSource();
@@ -37,10 +39,27 @@ public class Main {
         jdbcBloodParameterDao = new JdbcBloodParameterDao(dataSource);
         jdbcLabTestDao = new JdbcLabTestDao(dataSource);
         jdbcTagDao = new JdbcTagDao(dataSource);
+        jdbcUserDao = new JdbcUserDao(dataSource);
+
 
         //----------------------
-        //SELECT PATIENT
+        //LOGIN
         //----------------------
+        login();
+
+        if (user.isLockedOut()) {
+            return;
+        }
+        if (!user.isDoctor()) {
+            petParentUser();
+            return;
+        }
+
+        //----------------------
+        //DOCTOR OPTIONS
+        //----------------------
+        System.out.println("Welcome Dr. " + user.getLastName());
+        iOSys.waitForUser();
         while (true) {
             String chartNumber = iOSys.promptForInput("Please enter a patient chart number, or hit enter to search by name:");
 
@@ -110,6 +129,70 @@ public class Main {
                 }
             }
         }
+    }
+
+    public static void login() {
+        while (true) {
+            String username = iOSys.promptForInput("Please enter your username:");
+            user = jdbcUserDao.getUserByUsername(username);
+            if (user == null) {
+                String create = iOSys.promptForInput("No user by that username. Would you like to create an account? (y/n)").toLowerCase();
+                if (create.equals("y")) {
+                    user = iOSys.createUser(username);
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+            String password = iOSys.promptForInput("Please enter your password:");
+            for (int i = 0; i < 5; i++) {
+                assert user != null;
+                if (user.validatePassword(password)) {
+                    break;
+                } else {
+                    password = iOSys.promptForInput("Incorrect. Please try again. (" + (5 - i) + " attempts remaining)");
+                }
+            }
+            if (!user.validatePassword(password)) {
+                System.out.println("No more attempts. Quitting...");
+                user.setLockedOut(true);
+            }
+    }
+
+    public static void petParentUser() {
+        System.out.println("Welcome " + user.getFirstName() + " " + user.getLastName() + ".");
+        iOSys.waitForUser();
+        List<Patient> patientsForUser = jdbcPatientDao.getPatientsForUser(user);
+        while (true) {
+            if (patientsForUser.isEmpty()) {
+                System.out.println("No patients attributed to this account. Goodbye.");
+                return;
+            }
+            Patient match = null;
+            int option = 0;
+            for (Patient patient : patientsForUser) {
+                System.out.println(option + ") " + patient.toString());
+                option++;
+            }
+            while (true) {
+                String choice = iOSys.promptForInput("Please select a patient above by number");
+                try {
+                    match = patientsForUser.get(Integer.parseInt(choice));
+                    match.setTags(jdbcTagDao.getTagsForPatient(match));
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Please select a number option.");
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println("That is not a valid option.");
+                }
+            }
+            match.setAgeTag();
+            List<LabTest> testsForPatient = jdbcLabTestDao.getLabTestsByPatient(match);
+            iOSys.displayTests(testsForPatient, match);
+            iOSys.waitForUser();
+        }
+
     }
 
     public static void searchTestMain() {
@@ -218,7 +301,7 @@ public class Main {
                     "Update Tags",
                     patient.isActive() ? "Mark inactive" : "Mark active",
                     "Delete patient and associated tests" +
-                    "\n-----------------------------------------------",
+                            "\n-----------------------------------------------",
                     "Commit changes",
                     "back");
             if (choice.equals("1")) {
@@ -294,7 +377,6 @@ public class Main {
             patient.setTags(jdbcTagDao.getTagsForPatient(patient));
         }
     }
-
 
 
 }

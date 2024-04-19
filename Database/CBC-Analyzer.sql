@@ -1,10 +1,13 @@
 DROP TABLE IF EXISTS test_tag;
 DROP TABLE IF EXISTS patient_tag;
-DROP TABLE IF EXISTS result;
+DROP TABLE IF EXISTS parent_patient;
+DROP TABLE IF EXISTS "result";
 DROP TABLE IF EXISTS test;
-DROP TABLE IF EXISTS parameter;
+DROP TABLE IF EXISTS "parameter";
 DROP TABLE IF EXISTS patient;
 DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS "user";
+
 
 CREATE TABLE "patient" (
   "patient_id" serial PRIMARY KEY,
@@ -66,7 +69,7 @@ CREATE TABLE "user" (
 
 CREATE TABLE "parent_patient" (
     "parent_id" int NOT NULL,
-    "patient_id" in NOT NULL,
+    "patient_id" int NOT NULL,
     CONSTRAINT PK_parent_patient PRIMARY KEY (parent_id, patient_id)
 );
 
@@ -84,9 +87,9 @@ ALTER TABLE "test_tag" ADD FOREIGN KEY ("test_id") REFERENCES "test" ("test_id")
 
 ALTER TABLE "test_tag" ADD FOREIGN KEY ("tag_id") REFERENCES "tag" ("tag_id");
 
-ALTER TABLE "parent_patient" ADD FOREIGN KEY ("parent_id") REFERENCES "user" ("user_id");
+ALTER TABLE "parent_patient" ADD FOREIGN KEY ("parent_id") REFERENCES "user" ("user_id") ON DELETE CASCADE;
 
-ALTER TABLE "parent_patient" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id");
+ALTER TABLE "parent_patient" ADD FOREIGN KEY ("patient_id") REFERENCES "patient" ("patient_id") ON DELETE CASCADE;
 
 
 
@@ -134,8 +137,8 @@ INSERT INTO result (test_id, parameter_id, result_value) values
 	(1, 6, 330.0);
 
 INSERT INTO "user" (first_name, last_name, is_doctor, username, password) VALUES
-    ("Beau", "Blevins", false, "bblevins", "1234"),
-    ("Chris", "Kelly", true, "testdoctor", "1234");
+    ('Beau', 'Blevins', false, 'testparent', '1234'),
+    ('Chris', 'Kelly', true, 'testdoctor', '1234');
 
 INSERT INTO "parent_patient" (parent_id, patient_id) VALUES
     (1, 1),

@@ -7,6 +7,7 @@ public class User {
     private boolean isDoctor;
     private String username;
     private String password;
+    private boolean isLockedOut = false;
 
     public User() {
     }
@@ -18,6 +19,18 @@ public class User {
         this.isDoctor = isDoctor;
         this.username = username;
         this.password = password;
+    }
+
+    public User(String firstName, String lastName, boolean isDoctor, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.isDoctor = isDoctor;
+        this.username = username;
+        this.password = password;
+    }
+
+    public boolean validatePassword(String password) {
+        return password.equals(this.password);
     }
 
     public String getFirstName() {
@@ -58,5 +71,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isLockedOut() {
+        return isLockedOut;
+    }
+
+    public void setLockedOut(boolean lockedOut) {
+        isLockedOut = lockedOut;
     }
 }

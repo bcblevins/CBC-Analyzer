@@ -1,9 +1,6 @@
 package org.bcb.app;
 
-import org.bcb.model.BloodParameter;
-import org.bcb.model.LabTest;
-import org.bcb.model.Patient;
-import org.bcb.model.Tag;
+import org.bcb.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -122,7 +119,7 @@ public class IOSystem {
         }
         return outputTable.toString();
     }
-    public String createTable(LabTest labTest) {
+    public String createTable(LabTest labTest, Patient patient) {
         String tags;
         labTest.prependTags(patient.getAgeTagObject());
         if (labTest.getTagNames().isEmpty() && patient.getAgeTag() == null) {
@@ -205,106 +202,21 @@ public class IOSystem {
             matchingTests.addAll(jdbcLabTestDao.getLabTestsByTags(flagFilters, true));
         }
 
-
-        //Deprecated functionality
-        /*
-        File patientFile = new File(patient.getRecordFilePath());
-
-        StringBuilder matchingLogEntries = new StringBuilder();
-
-        try (Scanner dataInput = new Scanner(patientFile)){
-            //These are used to start and stop adding lines to the output string.
-            boolean isDateMatch = false;
-            boolean isTypeMatch = false;
-            boolean isFlagMatch = false;
-            boolean isPreviousLinesNeeded = true;
-
-            //we need this to add the lines before a type or flag match.
-            List<String> previousLines = new ArrayList<>();
-            previousLines.add("");
-            previousLines.add("");
-
-            boolean isPatientInfo = true;
-            while (dataInput.hasNextLine()){
-                String currentLine = dataInput.nextLine() + "\n";
-                //skips patient info and separator
-                if (isPatientInfo && !currentLine.contains(PATIENT_INFO_SEPARATOR)) {
-                    continue;
-                } else if (isPatientInfo && currentLine.contains(PATIENT_INFO_SEPARATOR)) {
-                    isPatientInfo = false;
-                    continue;
-                }
-
-                if (dateFilters.stream().anyMatch(currentLine::contains)){           //LIST.stream().anyMatch(STRING::contains) will see if STRING contains any of the elements in LIST
-                    isDateMatch = true;
-                } else if (typeFilters.stream().anyMatch(currentLine::contains)) {
-                    isTypeMatch = true;
-                } else if (flagFilters.stream().anyMatch(currentLine::contains)) {
-                    isFlagMatch = true;
-                }
-                if (isDateMatch) {
-                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
-                        matchingLogEntries.append(outlineInRed(currentLine));
-                    } else {
-                        matchingLogEntries.append(currentLine);
-                    }
-                } else if (isTypeMatch) {
-                    if (isPreviousLinesNeeded) {
-                        //add the most immediate previous line, in this case the date line
-                        matchingLogEntries.append(previousLines.get(1));
-                        isPreviousLinesNeeded = false;
-                    }
-                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
-                        matchingLogEntries.append(outlineInRed(currentLine));
-                    } else {
-                        matchingLogEntries.append(currentLine);
-
-                    }
-                } else if (isFlagMatch) {
-                    if (isPreviousLinesNeeded) {
-                        //add the last two lines, in this case the date and type lines
-                        matchingLogEntries.append(previousLines.get(0));
-                        matchingLogEntries.append(previousLines.get(1));
-                        isPreviousLinesNeeded = false;
-                    }
-                    if (currentLine.contains("(+)") || currentLine.contains("(-)")) {
-                        matchingLogEntries.append(outlineInRed(currentLine));
-                    } else {
-                        matchingLogEntries.append(currentLine);
-
-                    }
-                }
-                previousLines.add(currentLine);
-                previousLines.remove(0);
-
-                if (currentLine.contains(TEST_SEPARATOR)) {
-                    isDateMatch = false;
-                    isTypeMatch = false;
-                    isFlagMatch = false;
-                    isPreviousLinesNeeded = true;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Log file not found.");
-        }
-
-        */
-
         if (matchingTests.isEmpty()) {
             System.out.println("No log entries matching selected filters.");
         } else {
-            displayTests(matchingTests);
+            displayTests(matchingTests, patient);
         }
     }
 
-    public void displayTests(List<LabTest> tests) {
+    public void displayTests(List<LabTest> tests, Patient patient) {
 
         for (LabTest test : tests) {
             StringBuilder tags = new StringBuilder();
             for (Tag tag : jdbcTagDao.getTagsForTest(test)) {
                 tags.append(tag.getName()).append(",");
             }
-            System.out.println(createTable(test));
+            System.out.println(createTable(test, patient));
         }
     }
 
@@ -369,6 +281,35 @@ public class IOSystem {
         }
         return patient;
 
+    }
+    public User createUser(String username) {
+        String userInfo = "";
+        String yOrN = promptForInput("Would you like to keep the username (" + username + ")? (y/n)").toLowerCase();
+        if (yOrN.equals("n")) {
+            username = promptForInput("Please enter a username:");
+        }
+        userInfo += username;
+        System.out.println(userInfo);
+        String firstName = promptForInput("Please enter your first name:");
+
+        userInfo += " : " + firstName;
+        System.out.println(userInfo);
+        String lastName = promptForInput("Please enter your last name:");
+
+        userInfo += " : " + lastName;
+        System.out.println(userInfo);
+        String password;
+        while (true) {
+            password = promptForInput("Please enter your password:");
+            String confirmPassword = promptForInput("Please re-enter your password to confirm:");
+            if (password.equals(confirmPassword)) {
+                break;
+            } else {
+                System.out.println("Password did not match.");
+                waitForUser();
+            }
+        }
+        return jdbcUserDao.createUser(new User(firstName, lastName, false, username, password));
     }
 
     //----------------------
