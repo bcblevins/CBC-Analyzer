@@ -288,6 +288,9 @@ public class IOSystem {
         }
 
         */
+        for (LabTest labTest : matchingTests) {
+
+        }
 
         if (matchingTests.isEmpty()) {
             System.out.println("No log entries matching selected filters.");
