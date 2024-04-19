@@ -12,8 +12,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /*
-    TODO: search tests display not showing tags, test type showing null
-
+    TODO
  */
 public class Main {
     public static IOSystem iOSys = new IOSystem();
@@ -189,7 +188,11 @@ public class Main {
             }
             match.setAgeTag();
             List<LabTest> testsForPatient = jdbcLabTestDao.getLabTestsByPatient(match);
-            iOSys.displayTests(testsForPatient, match);
+            if (testsForPatient.isEmpty()) {
+                System.out.println("No tests for " + match.getName() + ".");
+            } else {
+                iOSys.displayTests(testsForPatient, match);
+            }
             iOSys.waitForUser();
         }
 

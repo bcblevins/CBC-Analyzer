@@ -66,7 +66,8 @@ public class JdbcLabTestDao {
                 "FROM test " +
                 "JOIN result ON result.test_id = test.test_id " +
                 "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
-                "WHERE patient_id = ?;";
+                "WHERE patient_id = ? " +
+                "ORDER BY test.time_stamp;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, patient.getId());
             while (rowSet.next()) {
