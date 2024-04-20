@@ -12,7 +12,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /*
-    TODO
+    TODO:
+        - Make Blood Parameters not hard coded
  */
 public class Main {
     public static IOSystem iOSys = new IOSystem();
@@ -174,8 +175,12 @@ public class Main {
                 System.out.println(option + ") " + patient.toString());
                 option++;
             }
+            System.out.println(option + ") quit");
             while (true) {
-                String choice = iOSys.promptForInput("Please select a patient above by number");
+                String choice = iOSys.promptForInput("Please select an option above by number");
+                if (choice.equals(String.valueOf(option))) {
+                    return;
+                }
                 try {
                     match = patientsForUser.get(Integer.parseInt(choice));
                     match.setTags(jdbcTagDao.getTagsForPatient(match));

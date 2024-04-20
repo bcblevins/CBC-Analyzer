@@ -1,3 +1,5 @@
+## [NOT UP TO DATE]
+
 # CBC-Analyzer
 
 This program takes blood values from the user and compares them to normal ranges. Results are recorded into a patient record system. The program also supports search functionalities by labTest type, date, and flags.

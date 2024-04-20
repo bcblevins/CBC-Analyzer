@@ -46,21 +46,6 @@ public class JdbcBloodParameterDao {
         return bloodParameter;
     }
 
-//    public List<BloodParameter> getResultsFromTest(LabTest test) {
-//        List<BloodParameter> results = new ArrayList<>();
-//        String sql = "SELECT test.*, parameter.parameter_id, parameter.name, result.result_value, parameter.range_low, parameter.range_high, parameter.unit " +
-//                "FROM test " +
-//                "JOIN result ON result.test_id = test.test_id " +
-//                "JOIN parameter ON parameter.parameter_id = result.parameter_id " +
-//                "WHERE test.test_id = ?";
-//        try {
-//            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, test.getId());
-//            test = mapToBloodParameter(rowSet);
-//        }  catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Could not connect to database");
-//        }
-//        return test;
-//    }
     private BloodParameter mapToBloodParameter(SqlRowSet rowSet) {
         return new BloodParameter(
                 rowSet.getInt("parameter_id"),

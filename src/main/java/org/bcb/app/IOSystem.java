@@ -19,30 +19,6 @@ public class IOSystem {
     //------------------
     // Class Methods
     //------------------
-    public String displayMenu(String title, String... args) {
-        //Display options
-        System.out.println(SEPARATOR);
-        System.out.println(title);
-        Set<String> options = new HashSet<>();
-        int choiceNumber = 0;
-        for (int i = 0; i < args.length; i++) {
-            choiceNumber = i + 1;
-            options.add(String.valueOf(choiceNumber));
-            System.out.println("  " + choiceNumber + ". " + args[i]);
-        }
-
-        //Validate choice and re-prompt if necessary
-        String choice = input.nextLine();
-        while (true) {
-            if (options.contains(choice)) {
-                break;
-            } else {
-                System.out.println("That is not a valid option. Please select an option between 1 and " + choiceNumber);
-                choice = input.nextLine();
-            }
-        }
-        return choice;
-    }
 
     public Map<String, Double> takeBloodValues() {
         System.out.println("Please enter the following values one at a time. Do not include spaces or units.");
@@ -75,50 +51,6 @@ public class IOSystem {
         return bloodMap;
     }
 
-    public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
-        if (flags.isEmpty() && patient.getAgeTag() == null) {
-            flags = "";
-        } else {
-            flags = patient.getAgeTag() + "," + flags;
-        }
-        LocalDate date = timestamp.toLocalDate();
-
-        String timestampFormatted = date.toString() + " " + timestamp.getHour() + ":" + timestamp.getMinute() + ":" + timestamp.getSecond();
-
-        StringBuilder outputTable =
-                new StringBuilder(name + "\n" +
-                        timestampFormatted + "\n" +
-                        flags + "\n" +
-                        "Parameter                 |Result    |Normal Range   | Unit     |\n" +
-                        "--------------------------|----------|---------------|----------|\n");
-
-        for (BloodParameter bloodParameter : bloodParameterList) {
-            //create name cells for each bloodParameter
-            String nameCell = createCell(bloodParameter.getName(), 26);
-
-            //create result cells
-            String resultCell = createCell(bloodParameter.getAnalyzedBloodValue(), 10);
-
-            //create normal range cells
-            String normalRangeCell = createCell(bloodParameter.getNormalRangeForOutput(), 15);
-
-            //create unit cells
-            String unitCell = createCell(bloodParameter.getUnit(), 10);
-
-            //create row
-            String row = nameCell + resultCell + normalRangeCell + unitCell;
-
-            //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
-            if (bloodParameter.isOutsideNormalRange()) {
-                outputTable.append(outlineInRed(row));
-                outputTable.append("\n");
-            } else {
-                outputTable.append(row);
-                outputTable.append("\n");
-            }
-        }
-        return outputTable.toString();
-    }
     public String createTable(LabTest labTest, Patient patient) {
         String tags;
         labTest.prependTags(patient.getAgeTagObject());
@@ -315,6 +247,31 @@ public class IOSystem {
     //----------------------
     //  Helper/Small Methods
     //----------------------
+    public String displayMenu(String title, String... args) {
+        //Display options
+        System.out.println(SEPARATOR);
+        System.out.println(title);
+        Set<String> options = new HashSet<>();
+        int choiceNumber = 0;
+        for (int i = 0; i < args.length; i++) {
+            choiceNumber = i + 1;
+            options.add(String.valueOf(choiceNumber));
+            System.out.println("  " + choiceNumber + ". " + args[i]);
+        }
+
+        //Validate choice and re-prompt if necessary
+        String choice = input.nextLine();
+        while (true) {
+            if (options.contains(choice)) {
+                break;
+            } else {
+                System.out.println("That is not a valid option. Please select an option between 1 and " + choiceNumber);
+                choice = input.nextLine();
+            }
+        }
+        return choice;
+    }
+
 
     public void printPatientInfo(Patient patient) {
         System.out.println(patient.isActive() ? "[ ACTIVE ]" : "[ INACTIVE ]");
@@ -348,6 +305,51 @@ public class IOSystem {
     }
 
 // Deprecated
+//public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
+//    if (flags.isEmpty() && patient.getAgeTag() == null) {
+//        flags = "";
+//    } else {
+//        flags = patient.getAgeTag() + "," + flags;
+//    }
+//    LocalDate date = timestamp.toLocalDate();
+//
+//    String timestampFormatted = date.toString() + " " + timestamp.getHour() + ":" + timestamp.getMinute() + ":" + timestamp.getSecond();
+//
+//    StringBuilder outputTable =
+//            new StringBuilder(name + "\n" +
+//                    timestampFormatted + "\n" +
+//                    flags + "\n" +
+//                    "Parameter                 |Result    |Normal Range   | Unit     |\n" +
+//                    "--------------------------|----------|---------------|----------|\n");
+//
+//    for (BloodParameter bloodParameter : bloodParameterList) {
+//        //create name cells for each bloodParameter
+//        String nameCell = createCell(bloodParameter.getName(), 26);
+//
+//        //create result cells
+//        String resultCell = createCell(bloodParameter.getAnalyzedBloodValue(), 10);
+//
+//        //create normal range cells
+//        String normalRangeCell = createCell(bloodParameter.getNormalRangeForOutput(), 15);
+//
+//        //create unit cells
+//        String unitCell = createCell(bloodParameter.getUnit(), 10);
+//
+//        //create row
+//        String row = nameCell + resultCell + normalRangeCell + unitCell;
+//
+//        //turn row red and print if outside analyzed parameter outside normal range, otherwise just print row
+//        if (bloodParameter.isOutsideNormalRange()) {
+//            outputTable.append(outlineInRed(row));
+//            outputTable.append("\n");
+//        } else {
+//            outputTable.append(row);
+//            outputTable.append("\n");
+//        }
+//    }
+//    return outputTable.toString();
+//}
+//
 
     //    public void writeTestToRecord(String table) {
 //        File logFile = new File(patient.getRecordFilePath());
