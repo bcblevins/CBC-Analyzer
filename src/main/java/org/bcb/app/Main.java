@@ -210,7 +210,7 @@ public class Main {
             String searchMethod = iOSys.displayMenu("::Selected filters:: " + "\n"
                     + filtersForDisplay + "\n"
                     + "\n"
-                    + "Please add at least one filter:", "LabTest type", "Date", "Flags", "Search using selected filters", "Go back to patient menu");
+                    + "Please add at least one filter:", "LabTest type", "Date", "Tags", "Search using selected filters", "Go back to patient menu");
             System.out.println();
 
             //tests
@@ -238,9 +238,9 @@ public class Main {
                 filters += "d" + date + ",";
                 filtersForDisplay += date + ", ";
 
-                //flags
+                //tags
             } else if (searchMethod.equals("3")) {
-                String filterToAdd = iOSys.promptForInput("Please enter a flag to filter for:");
+                String filterToAdd = iOSys.promptForInput("Please enter a tag to filter for:");
                 filters += "f" + filterToAdd + ",";
                 filtersForDisplay += filterToAdd + ", ";
 

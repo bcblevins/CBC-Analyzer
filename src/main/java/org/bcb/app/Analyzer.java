@@ -62,7 +62,7 @@ public class Analyzer {
     public void analyzeNewValues(Patient patient) {
         String choice = IO_SYSTEM.displayMenu("Would you like to:", "Input your own blood values", "Generate random blood values (demo mode - will not save to patient record)", "Go back to patient menu");
         Map<String, Double> bloodInputMap = new HashMap<>();
-        String flags = "";
+        String tags = "";
 
         //TODO: MAKE THIS FALSE AFTER TESTING
         boolean isWrittenToDb = true;

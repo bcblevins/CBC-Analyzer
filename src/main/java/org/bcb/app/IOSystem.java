@@ -102,7 +102,7 @@ public class IOSystem {
     public void searchForTests(String filters, Patient patient) {
         List<String> typeFilters = new ArrayList<>();
         List<LocalDate> dateFilters = new ArrayList<>();
-        List<String> flagFilters = new ArrayList<>();
+        List<String> tagFilters = new ArrayList<>();
         String[] filtersArray = filters.split(",");
         List<LabTest> matchingTests = new ArrayList<>();
 
@@ -117,7 +117,7 @@ public class IOSystem {
                     System.out.println("Failed to parse search date");
                 }
             } else if (filter.charAt(0) == 'f') {
-                flagFilters.add(filter.substring(1));
+                tagFilters.add(filter.substring(1));
             }
         }
 
@@ -130,8 +130,8 @@ public class IOSystem {
         if (!typeFilters.isEmpty()) {
             matchingTests.addAll(jdbcLabTestDao.getLabTestsByPatient(patient));
         }
-        if (!flagFilters.isEmpty()) {
-            matchingTests.addAll(jdbcLabTestDao.getLabTestsByTags(flagFilters, true));
+        if (!tagFilters.isEmpty()) {
+            matchingTests.addAll(jdbcLabTestDao.getLabTestsByTags(tagFilters, true));
         }
 
         if (matchingTests.isEmpty()) {
@@ -279,7 +279,7 @@ public class IOSystem {
         System.out.println("Species: |" + patient.getSpecies());
         System.out.println("Sex:     |" + patient.getSex());
         System.out.println("DOB:     |" + patient.getDateOfBirth().toString());
-        System.out.println("Flags:   |" + patient.getTagNames());
+        System.out.println("tags:   |" + patient.getTagNames());
     }
 
     private String createCell(String value, int cellSize) {
@@ -305,11 +305,11 @@ public class IOSystem {
     }
 
 // Deprecated
-//public String createTable(List<BloodParameter> bloodParameterList, String name, String flags, LocalDateTime timestamp) {
-//    if (flags.isEmpty() && patient.getAgeTag() == null) {
-//        flags = "";
+//public String createTable(List<BloodParameter> bloodParameterList, String name, String tags, LocalDateTime timestamp) {
+//    if (tags.isEmpty() && patient.getAgeTag() == null) {
+//        tags = "";
 //    } else {
-//        flags = patient.getAgeTag() + "," + flags;
+//        tags = patient.getAgeTag() + "," + tags;
 //    }
 //    LocalDate date = timestamp.toLocalDate();
 //
@@ -318,7 +318,7 @@ public class IOSystem {
 //    StringBuilder outputTable =
 //            new StringBuilder(name + "\n" +
 //                    timestampFormatted + "\n" +
-//                    flags + "\n" +
+//                    tags + "\n" +
 //                    "Parameter                 |Result    |Normal Range   | Unit     |\n" +
 //                    "--------------------------|----------|---------------|----------|\n");
 //
@@ -387,12 +387,12 @@ public class IOSystem {
 //        String sex = patientInfo.get(2);
 //        String species = patientInfo.get(3);
 //        String dob = patientInfo.get(4);
-//        String flagsRaw = patientInfo.get(5);
+//        String tagsRaw = patientInfo.get(5);
 //
 //        LocalDate dateOfBirth = LocalDate.parse(dob);
-//        List<String> flags = List.of(flagsRaw.split(","));
+//        List<String> tags = List.of(tagsRaw.split(","));
 //
-//        return new Patient(id, name, sex, species, dateOfBirth, flags, patientFile.getPath());
+//        return new Patient(id, name, sex, species, dateOfBirth, tags, patientFile.getPath());
 //    }
 //
 //    private String removeColor(String table) {
